@@ -74,7 +74,7 @@ class ResearchAgent extends Agent {
         data.items.forEach((item: any, index: number) => {
           console.log(`\n${index + 1}. ${item.title}`);
           console.log(`   URL: ${item.link}`);
-          console.log(`   Snippet: ${item.snippet.slice(0, 150)}...`);
+          console.log(`   Snippet: ${item.snippet}`);
         });
       } else {
         console.log("No results found.");

@@ -1,32 +1,32 @@
 import { ResearchAgent, ContentPlannerAgent, SEOOptimizerAgent, ContentGeneratorAgent, EditorAgent, Agent } from './agents';
+import OpenAI from 'openai';
 
 interface GoogleSearchCredentials {
   apiKey: string;
   cseId: string;
 }
 
-interface AIClient {
-  chat: {
-    completions: {
-      create: (params: any) => Promise<any>;
-    };
-  };
-}
+interface AIClient extends OpenAI {}
 
 class ArticleCreator {
   aiClient: AIClient;
-  googleSearchClient: GoogleSearchCredentials;
+  googleSearchCredentials: GoogleSearchCredentials;
   agents: Agent[];
 
-  constructor(aiClient: AIClient, googleSearchCredentials: GoogleSearchCredentials) {
-    this.aiClient = aiClient;
-    this.googleSearchClient = googleSearchCredentials;
+  constructor() {
+    this.aiClient = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    this.googleSearchCredentials = {
+      apiKey: process.env.GOOGLE_API_KEY || '',
+      cseId: process.env.GOOGLE_CSE_ID || '',
+    };
     this.agents = [
-      new ResearchAgent("Researcher", "research", aiClient, googleSearchCredentials),
-      new ContentPlannerAgent("Planner", "content_planning", aiClient),
-      new SEOOptimizerAgent("SEO", "seo_optimization", aiClient),
-      new ContentGeneratorAgent("Generator", "content_generation", aiClient),
-      new EditorAgent("Editor", "editing", aiClient)
+      new ResearchAgent("Researcher", "research", this.aiClient, this.googleSearchCredentials),
+      new ContentPlannerAgent("Planner", "content_planning", this.aiClient),
+      new SEOOptimizerAgent("SEO", "seo_optimization", this.aiClient),
+      new ContentGeneratorAgent("Generator", "content_generation", this.aiClient),
+      new EditorAgent("Editor", "editing", this.aiClient)
     ];
   }
 
