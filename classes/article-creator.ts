@@ -23,10 +23,10 @@ class ArticleCreator {
     };
     this.agents = [
       new ResearchAgent("Researcher", "research", this.aiClient, this.googleSearchCredentials),
-      new ContentPlannerAgent("Planner", "content_planning", this.aiClient),
-      new SEOOptimizerAgent("SEO", "seo_optimization", this.aiClient),
-      new ContentGeneratorAgent("Generator", "content_generation", this.aiClient),
-      new EditorAgent("Editor", "editing", this.aiClient)
+      // new ContentPlannerAgent("Planner", "content_planning", this.aiClient),
+      // new SEOOptimizerAgent("SEO", "seo_optimization", this.aiClient),
+      // new ContentGeneratorAgent("Generator", "content_generation", this.aiClient),
+      // new EditorAgent("Editor", "editing", this.aiClient)
     ];
   }
 
@@ -43,7 +43,7 @@ class ArticleCreator {
       }
     }
 
-    return data.finalContent;
+    return data.researchResults;
   }
 }
 

@@ -1,4 +1,5 @@
 import axios from 'axios';
+import * as cheerio from 'cheerio';
 
 abstract class Agent {
   name: string;
@@ -34,6 +35,7 @@ class ResearchAgent extends Agent {
   async optimizeQuery(contentType: string, query: string): Promise<string> {
     let prompt: string;
     if (contentType === "social commentary") {
+      console.log("Optimizing query for social commentary");
       prompt = `Assume you're a writer for an urban, pop culture, fashion magazine. You're tasked with doing research for an article on the topic of ${query}. Generate a search query that is optimized to gather data that would support an interesting take on this topic. Return only the search query as a string.`;
     } else if (contentType === "archive dive") {
       prompt = `Generate an optimized search query for an archive dive on: ${query}`;
@@ -70,32 +72,43 @@ class ResearchAgent extends Agent {
 
     if (response.status === 200) {
       const data = response.data;
-      if (data.items) {
-        data.items.forEach((item: any, index: number) => {
-          console.log(`\n${index + 1}. ${item.title}`);
-          console.log(`   URL: ${item.link}`);
-          console.log(`   Snippet: ${item.snippet}`);
-        });
-      } else {
-        console.log("No results found.");
-      }
+      const results = data.items ? data.items.map((item: any) => ({
+        title: item.title,
+        url: item.link,
+        snippet: item.snippet
+      })) : [];
+      return results.slice(0,2);
     } else {
       console.log(`Error: ${response.status}`);
       console.log(response.statusText);
+      return [];
     }
-
-    return response.data;
   }
 
-  filterResults(results: any): any {
-    const extractedText = this.extractText(results);
-    // Implement filtering logic
-    return extractedText;
+  async filterResults(results: any): Promise<any> {
+    const extractedTexts = await Promise.all(results.map(async (result: any) => {
+      const text = await this.extractText(result.url);
+
+      //Maintains all the properties of the result object, but adds the text property
+      return { ...result, text };
+    }));
+    return extractedTexts;
   }
 
-  extractText(filteredResults: any): any {
-    // Implement text extraction logic
-    return filteredResults;
+  async extractText(url: string): Promise<string> {
+    try {
+      const response = await axios.get(url);
+      const $ = cheerio.load(response.data);
+      const text = $('body').text();
+      return text.trim();
+    } catch (error: unknown) {
+      if (error instanceof Error) {
+        console.error(`Failed to extract text from ${url}: ${error.message}`);
+      } else {
+        console.error(`Failed to extract text from ${url}: Unknown error`);
+      }
+      return "";
+    }
   }
 }
 
