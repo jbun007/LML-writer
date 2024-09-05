@@ -50,14 +50,22 @@ import ReactMarkdown from "react-markdown";
 export default function Dashboard() {
   const [contentType, setContentType] = useState("social commentary");
   const [keywords, setKeywords] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState<{
     articleTitle: string;
     articleContent: string;
     contentPlan: string;
   } | null>(null);
 
+  const LoadingSpinner = () => (
+    <div className="flex justify-center items-center h-full">
+      <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-gray-900"></div>
+    </div>
+  );
+
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
+    setIsLoading(true);
     try {
       const response = await fetch("/api/article-creator", {
         method: "POST",
@@ -87,15 +95,10 @@ export default function Dashboard() {
       console.log("\n OUTPUT: \n", output);
     } catch (error) {
       console.error("Error creating article:", error);
-      // Optionally, update state to show an error message
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const markup = `#### Further Reading
-
-- **Seminal Research Papers:**
-  * "Effects of Creatine Supplementation on Performance and Training Adaptations" - Journal of Strength and Conditioning Research
-  * "Long-Term Creatine Supplementation Does Not Adversely Affect Renal Function in Healthy Athletes" - Clinical Journal of Sport Medicine`;
 
   return (
     <div className="grid h-screen pl-[53px] w-screen">
@@ -374,31 +377,31 @@ export default function Dashboard() {
             </Badge>
             <div className="flex-1 overflow-auto p-4">
               {/* ********       where the output will be displayed        *****/}
-              {output && (
+              {isLoading ? (
+                <div className="flex flex-col justify-center items-center h-full">
+                  <span className="mb-4">Patience is a virtue...</span>
+                  <LoadingSpinner />
+                </div>
+              ) : output ? (
                 <div className="space-y-4">
+                  {/* Content Plan */}
                   <div className="mt-4 border-t pt-4">
-                    <h3 className="text-lg font-semibold">Content Plan:</h3>
                     <ReactMarkdown className="prose prose-sm">
-                      {output.contentPlan
-                        ? output.contentPlan
-                        : "No content plan available"}
+                      {output.contentPlan || "No content plan available"}
                     </ReactMarkdown>
                   </div>
+                  {/* Article Title */}
                   <h2 className="text-2xl font-bold">
-                    {output.articleTitle
-                      ? output.articleTitle
-                      : "No title available"}
+                    {output.articleTitle || "No title available"}
                   </h2>
+                  {/* Article Content */}
                   <div className="prose prose-sm">
                     <ReactMarkdown>
-                      {output.articleContent
-                        ? output.articleContent
-                        : "No content available"}
+                      {output.articleContent || "No content available"}
                     </ReactMarkdown>
                   </div>
                 </div>
-              )}
-              {!output && (
+              ) : (
                 <p className="text-muted-foreground">
                   Generated content will appear here.
                 </p>
