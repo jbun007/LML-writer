@@ -45,30 +45,57 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useState } from "react";
+import ReactMarkdown from "react-markdown";
 
 export default function Dashboard() {
   const [contentType, setContentType] = useState("social commentary");
   const [keywords, setKeywords] = useState("");
-  const [output, setOutput] = useState("");
+  const [output, setOutput] = useState<{
+    articleTitle: string;
+    articleContent: string;
+    contentPlan: string;
+  } | null>(null);
 
   const handleSubmit = async (event: React.FormEvent) => {
     event.preventDefault();
-    const response = await fetch("/api/article-creator", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ contentType, searchQuery: keywords }),
-    });
+    try {
+      const response = await fetch("/api/article-creator", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ contentType, searchQuery: keywords }),
+      });
 
-    if (response.ok) {
-      const result = await response.json();
-      console.log("Article created:", result);
-      setOutput(result);
-    } else {
-      console.error("Failed to create article");
+      if (!response.ok) {
+        throw new Error("Failed to create article");
+      }
+
+      const data: {
+        articleTitle: string;
+        articleContent: string;
+        contentPlan: string;
+      } = await response.json();
+      console.log("DATA --- AAAAA: \n", data);
+
+      // Update the output state with the correct structure
+      setOutput({
+        articleTitle: data.articleTitle,
+        articleContent: data.articleContent,
+        contentPlan: data.contentPlan,
+      });
+      console.log("\n OUTPUT: \n", output);
+    } catch (error) {
+      console.error("Error creating article:", error);
+      // Optionally, update state to show an error message
     }
   };
+
+  const markup = `#### Further Reading
+
+- **Seminal Research Papers:**
+  * "Effects of Creatine Supplementation on Performance and Training Adaptations" - Journal of Strength and Conditioning Research
+  * "Long-Term Creatine Supplementation Does Not Adversely Affect Renal Function in Healthy Athletes" - Clinical Journal of Sport Medicine`;
 
   return (
     <div className="grid h-screen pl-[53px] w-screen">
@@ -346,7 +373,36 @@ export default function Dashboard() {
               Output
             </Badge>
             <div className="flex-1 overflow-auto p-4">
-              {output && <pre>{JSON.stringify(output, null, 2)}</pre>}
+              {/* ********       where the output will be displayed        *****/}
+              {output && (
+                <div className="space-y-4">
+                  <div className="mt-4 border-t pt-4">
+                    <h3 className="text-lg font-semibold">Content Plan:</h3>
+                    <ReactMarkdown className="prose prose-sm">
+                      {output.contentPlan
+                        ? output.contentPlan
+                        : "No content plan available"}
+                    </ReactMarkdown>
+                  </div>
+                  <h2 className="text-2xl font-bold">
+                    {output.articleTitle
+                      ? output.articleTitle
+                      : "No title available"}
+                  </h2>
+                  <div className="prose prose-sm">
+                    <ReactMarkdown>
+                      {output.articleContent
+                        ? output.articleContent
+                        : "No content available"}
+                    </ReactMarkdown>
+                  </div>
+                </div>
+              )}
+              {!output && (
+                <p className="text-muted-foreground">
+                  Generated content will appear here.
+                </p>
+              )}
             </div>
             <form
               className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"

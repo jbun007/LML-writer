@@ -6,8 +6,12 @@ export async function POST(req: NextRequest) {
 
   try {
     const articleCreator = new ArticleCreator();
-    const result = await articleCreator.execute(contentType, searchQuery);
-    return NextResponse.json({ result });
+    // const result = await articleCreator.execute(contentType, searchQuery);
+    // return NextResponse.json({ result });
+
+    return NextResponse.json(await articleCreator.execute(contentType, searchQuery));
+
+
   } catch (error) {
     if (error instanceof Error) {
       return NextResponse.json({ error: error.message }, { status: 500 });
