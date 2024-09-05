@@ -54,7 +54,7 @@ export default function Dashboard() {
   const [output, setOutput] = useState<{
     articleTitle: string;
     articleContent: string;
-    contentPlan: string;
+    contentPlan?: string;
   } | null>(null);
   const [additionalCommentary, setAdditionalCommentary] = useState("");
 
@@ -125,7 +125,7 @@ export default function Dashboard() {
       setOutput({
         articleTitle: data.articleTitle,
         articleContent: data.articleContent,
-        contentPlan: data.contentPlan,
+        // contentPlan: data.contentPlan,
       });
     } catch (error) {
       console.error("Error regenerating article:", error);
@@ -421,13 +421,11 @@ export default function Dashboard() {
                   {/* Content Plan */}
                   <div className="mt-4 border-t pt-4">
                     <ReactMarkdown className="prose prose-sm">
-                      {output.contentPlan || "No content plan available"}
+                      {output.contentPlan}
                     </ReactMarkdown>
                   </div>
                   {/* Article Title */}
-                  <h2 className="text-2xl font-bold">
-                    {output.articleTitle || "No title available"}
-                  </h2>
+                  <h2 className="text-2xl font-bold">{output.articleTitle}</h2>
                   {/* Article Content */}
                   <div className="prose prose-sm">
                     <ReactMarkdown>

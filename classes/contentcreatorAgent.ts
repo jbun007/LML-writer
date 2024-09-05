@@ -50,10 +50,11 @@ class ContentCreatorAgent extends Agent {
     }
 
     async regenerateContent(previousOutput: any, additionalCommentary: string): Promise<any> {
+
+      // Previous Content Plan:
+      // ${previousOutput.contentPlan}
+      
       const prompt = `Regenerate the following article based on the additional commentary:
-    
-    Previous Content Plan:
-    ${previousOutput.contentPlan}
     
     Previous Article Title:
     ${previousOutput.articleTitle}
@@ -98,7 +99,7 @@ class ContentCreatorAgent extends Agent {
 }
 
 const responseFormat = z.object({
-  contentPlan: z.string(),
+  //contentPlan: z.string(),
   articleTitle: z.string(),
   articleContent: z.string()
 });
