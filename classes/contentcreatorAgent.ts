@@ -1,14 +1,20 @@
 import { Agent } from "./agents";
+import { z } from "zod";
+import { zodResponseFormat } from "openai/helpers/zod";
 
 class ContentCreatorAgent extends Agent {
     async executeTask(inputData: any): Promise<any> {
-      const contentPlan = inputData.contentPlan || {};
-      const articleTitle = inputData.articleTitle || {};
-
-    //seo optimized output
-
-      const generatedContent = await this.generateContent(contentPlan, articleTitle);
-      return { articleContent: generatedContent };
+      if (inputData.previousOutput && inputData.additionalCommentary) {
+        return(await this.regenerateContent(inputData.previousOutput, inputData.additionalCommentary));
+        //return {regeneratedContent};
+      } else {
+        // Existing logic for initial content generation
+        const contentPlan = inputData.contentPlan || {};
+        const articleTitle = inputData.articleTitle || {};
+        //seo optimized output
+        const generatedContent = await this.generateContent(contentPlan, articleTitle);
+        return { articleContent: generatedContent };
+      }
     }
   
     async generateContent(contentPlan: any, articleTitle: any): Promise<any> {
@@ -32,7 +38,7 @@ class ContentCreatorAgent extends Agent {
         Please generate the full article based on these guidelines.`;
 
       const response = await this.aiClient.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-3.5-turbo",
         messages: [
           { role: "system", content: "You are a helpful assistant that generates content based on a given plan." },
           { role: "user", content: prompt }
@@ -42,5 +48,59 @@ class ContentCreatorAgent extends Agent {
       console.log(response.choices[0].message.content);
       return response.choices[0].message.content;
     }
+
+    async regenerateContent(previousOutput: any, additionalCommentary: string): Promise<any> {
+      const prompt = `Regenerate the following article based on the additional commentary:
+    
+    Previous Content Plan:
+    ${previousOutput.contentPlan}
+    
+    Previous Article Title:
+    ${previousOutput.articleTitle}
+    
+    Previous Article Content:
+    ${previousOutput.articleContent}
+    
+    Additional Commentary:
+    ${additionalCommentary}
+    
+    Please regenerate the article, incorporating the feedback and additional instructions provided. Return the updated content plan, article title, and article content according to the response format. The values should be in markdown.`;
+    
+      const response = await this.aiClient.chat.completions.create({
+        model: "gpt-4o-2024-08-06",
+        messages: [
+          { role: "system", content: "You are a helpful assistant that regenerates content based on feedback." },
+          { role: "user", content: prompt }
+        ],
+        response_format: zodResponseFormat(responseFormat, "regeneratedContent")
+      });
+    
+      // // Assuming the AI returns a structured response with contentPlan, articleTitle, and articleContent
+      // const regeneratedContent = JSON.parse(response.choices[0].message.content);
+      // return {
+      //   contentPlan: regeneratedContent.contentPlan,
+      //   articleTitle: regeneratedContent.articleTitle,
+      //   articleContent: regeneratedContent.articleContent
+      // };
+      
+      try {
+        const parsedResponse = JSON.parse(response.choices[0].message.content);
+
+        console.log("CHECKING RESPONSE FORMAT - parsedResponse ", parsedResponse);
+
+
+        return {contentPlan: parsedResponse.contentPlan, articleTitle: parsedResponse.articleTitle, articleContent: parsedResponse.articleContent};
+      } catch (error) {
+        console.error("Error parsing response:", error);
+        throw new Error("Failed to parse the AI response");
+      }
+    }
 }
-  export default ContentCreatorAgent;
+
+const responseFormat = z.object({
+  contentPlan: z.string(),
+  articleTitle: z.string(),
+  articleContent: z.string()
+});
+
+export default ContentCreatorAgent;

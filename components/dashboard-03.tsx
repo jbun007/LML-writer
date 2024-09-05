@@ -56,6 +56,7 @@ export default function Dashboard() {
     articleContent: string;
     contentPlan: string;
   } | null>(null);
+  const [additionalCommentary, setAdditionalCommentary] = useState("");
 
   const LoadingSpinner = () => (
     <div className="flex justify-center items-center h-full">
@@ -92,9 +93,42 @@ export default function Dashboard() {
         articleContent: data.articleContent,
         contentPlan: data.contentPlan,
       });
-      console.log("\n OUTPUT: \n", output);
+      // console.log("\n OUTPUT: \n", output);
     } catch (error) {
       console.error("Error creating article:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const handleRegenerate = async () => {
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/article-regenerator", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          previousOutput: output,
+          additionalCommentary,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to regenerate article");
+      }
+
+      const data = await response.json();
+      console.log("REGENERATED DATA: \n", data);
+
+      setOutput({
+        articleTitle: data.articleTitle,
+        articleContent: data.articleContent,
+        contentPlan: data.contentPlan,
+      });
+    } catch (error) {
+      console.error("Error regenerating article:", error);
     } finally {
       setIsLoading(false);
     }
@@ -410,14 +444,20 @@ export default function Dashboard() {
             <form
               className="relative overflow-hidden rounded-lg border bg-background focus-within:ring-1 focus-within:ring-ring"
               x-chunk="A form for sending a directions to AI agents. The form has a textarea and buttons to upload files and record audio."
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleRegenerate();
+              }}
             >
-              <Label htmlFor="message" className="sr-only">
-                Message
+              <Label htmlFor="additionalCommentary" className="sr-only">
+                Additional Feedback and Commentary
               </Label>
               <Textarea
-                id="message"
+                id="additionalFeedback"
                 placeholder="For additional instructions and revisions after initial content is generated"
                 className="min-h-12 resize-none border-0 p-3 shadow-none focus-visible:ring-0"
+                value={additionalCommentary}
+                onChange={(e) => setAdditionalCommentary(e.target.value)}
               />
               <div className="flex items-center p-3 pt-0">
                 <Tooltip>
@@ -439,7 +479,7 @@ export default function Dashboard() {
                   <TooltipContent side="top">Use Microphone</TooltipContent>
                 </Tooltip>
                 <Button type="submit" size="sm" className="ml-auto gap-1.5">
-                  Send Message
+                  Regenerate Article
                   <CornerDownLeft className="size-3.5" />
                 </Button>
               </div>

@@ -57,7 +57,7 @@ class ContentPlannerAgent extends Agent {
       console.log("Outline prompt: ", prompt);
 
       const response = await this.aiClient.chat.completions.create({
-          model: "gpt-4o",
+          model: "gpt-3.5-turbo",
           messages: [
               { role: "system", content: "You are a helpful assistant that generates content plans for articles." },
               { role: "user", content: prompt }
@@ -73,7 +73,7 @@ class ContentPlannerAgent extends Agent {
       //The supporting points are the following: ${supportingPoints}. The references are the following: ${references}. The style of the article is the following: ${style}
 
       const response = await this.aiClient.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-3.5-turbo",
         messages: [
           { role: "system", content: "You are a helpful assistant that generates content plans for articles." },
           { role: "user", content: prompt }
@@ -89,7 +89,7 @@ class ContentPlannerAgent extends Agent {
     //     //structured output
 
     //     const response = await this.aiClient.chat.completions.create({
-    //         model: "gpt-4o",
+    //         model: "gpt-3.5-turbo",
     //         messages: [
     //             { role: "system", content: "You are a helpful assistant that generates content plans for articles." },
     //             { role: "user", content: prompt }
@@ -119,7 +119,7 @@ class ContentPlannerAgent extends Agent {
     //     //structured output
 
     //     const response = await this.aiClient.chat.completions.create({
-    //         model: "gpt-4o",
+    //         model: "gpt-3.5-turbo",
     //         messages: [
     //             { role: "system", content: "You are a helpful assistant that generates content plans for articles." },
     //             { role: "user", content: prompt }
@@ -134,7 +134,7 @@ class ContentPlannerAgent extends Agent {
       const prompt = `Generate a title that is sophisticated, intriguing, and evokes curiosity, similar to the style of The Atlantic or The New Yorker, based on the following idea: ${contentPlan}. The title should suggest depth and nuance. Avoid cliches and sensationalism. It must be both engaging and thought-provoking, appealing to readers who enjoy in-depth well-researched articles. Here's a few good examples: 'Creatine’s Hidden Potential: Beyond Muscle, How It Fuels the Modern Mind,' 'Collagen’s Promise: Separating Myth from Medicine in the Pursuit of Youth.' Return only the title as a string.`;
 
       const response = await this.aiClient.chat.completions.create({
-        model: "gpt-4o",
+        model: "gpt-3.5-turbo",
         messages: [
           { role: "system", content: "You are a helpful assistant that generates high-quality, intriguing titles similar to those found in publications like The Atlantic and New Yorker." },
           { role: "user", content: prompt }
