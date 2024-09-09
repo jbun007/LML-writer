@@ -67,7 +67,7 @@ class seoOptimizerAgent extends Agent {
   
         Instructions: 
         1. Return a comma separatedlist of the keywords. 
-        2. The keywords suggestions should be frequently searched 
+        2. The keywords suggestions should be a mix of frequently searched and less competitive, long-tail keywords
         3. The keywords suggestions should be related to the entities
         4. Ensure that the suggestions are not too generic`;
   
@@ -125,7 +125,9 @@ class seoOptimizerAgent extends Agent {
       
        Instructions: 
         1. Return a comma separatedlist of the questions. 
-        2. The question keywords suggestions should be frequently searched `;
+        2. The question keywords suggestions should be a mix of frequently searched and less competitive, long-tail keywords
+        3. The question keywords suggestions should be related to the entities
+        4. Ensure that the suggestions are not too generic`;
       
       try {
         const response = await this.aiClient.chat.completions.create({

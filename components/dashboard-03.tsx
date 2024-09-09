@@ -254,7 +254,7 @@ export default function Dashboard() {
       </aside>
       <div className="flex flex-col">
         <header className="sticky top-0 z-10 flex h-[53px] items-center gap-1 border-b bg-background px-4">
-          <h1 className="text-xl font-semibold">LORE STORIES</h1>
+          <h1 className="text-xl font-semibold">LML ARTICLES</h1>
           <Drawer>
             <DrawerTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
@@ -294,60 +294,44 @@ export default function Dashboard() {
                   Settings
                 </legend>
                 <div className="grid gap-3">
-                  <Label htmlFor="model">Inputs</Label>
+                  <Label htmlFor="model">Intent</Label>
                   <Select onValueChange={setContentType}>
                     <SelectTrigger
                       id="model"
                       className="items-start [&_[data-description]]:hidden"
                     >
-                      <SelectValue placeholder="Select Content Type" />
+                      <SelectValue placeholder="Select Target Audience" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="social commentary">
-                        <div className="flex items-start gap-3 text-muted-foreground">
-                          <Rabbit className="size-5" />
-                          <div className="grid gap-0.5">
-                            <p>
-                              <span className="font-medium text-foreground">
-                                Social Commentary
-                              </span>
-                            </p>
-                            <p className="text-xs" data-description>
-                              Explores and analyzes social issues, behaviors,
-                              and trends.
-                            </p>
-                          </div>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="archive dives">
+                      <SelectItem value="solution">
                         <div className="flex items-start gap-3 text-muted-foreground">
                           <Bird className="size-5" />
                           <div className="grid gap-0.5">
                             <p>
                               <span className="font-medium text-foreground">
-                                Archive Dives
+                                Define the Problem, Find solutions
                               </span>
                             </p>
                             <p className="text-xs" data-description>
-                              Dives into historical archives to uncover
-                              forgotten stories and insights.
+                              Articles that help users clearly define a problem
+                              and learn about the best known solutions.
                             </p>
                           </div>
                         </div>
                       </SelectItem>
-                      <SelectItem value="street style gallery">
+                      <SelectItem value="product research">
                         <div className="flex items-start gap-3 text-muted-foreground">
                           <Turtle className="size-5" />
                           <div className="grid gap-0.5">
                             <p>
-                              Gallery{" "}
                               <span className="font-medium text-foreground">
-                                Street Style
+                                Research Before Buying
                               </span>
                             </p>
                             <p className="text-xs" data-description>
-                              Collection of images from the streets of the most
-                              culturally influencial cities
+                              Articles that help users make informed decisions
+                              before making a purchase. Reviews, comparisons,
+                              etc.
                             </p>
                           </div>
                         </div>
