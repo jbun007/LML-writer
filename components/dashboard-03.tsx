@@ -47,8 +47,53 @@ import {
 import { useState } from "react";
 import ReactMarkdown from "react-markdown";
 
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+
+import { Keyword, columns } from "@/app/keyword-table/columns";
+import { DataTable } from "@/app/keyword-table/data-table";
+import { transformKeywordsToTableData } from "@/utils/dataTransform";
+
 export default function Dashboard() {
-  const [contentType, setContentType] = useState("social commentary");
+  const sampleData = [
+    {
+      id: "What are the benefits of ashwagandha?",
+      keyword: "What are the benefits of ashwagandha?",
+      search_volume: 100,
+      competition: 20,
+      page_bid: 3.1,
+    },
+    {
+      id: "ashwagandha testosterone",
+      keyword: "ashwagandha testosterone",
+      search_volume: 125,
+      competition: 20,
+      page_bid: 3.2,
+    },
+    {
+      id: "ashwagandha anxiety relief",
+      keyword: "ashwagandha anxiety relief",
+      search_volume: 125,
+      competition: 20,
+      page_bid: 1.4,
+    },
+    {
+      id: "ashwagandha sleep aid",
+      keyword: "ashwagandha sleep aid",
+      search_volume: 125,
+      competition: 20,
+      page_bid: 1.0,
+    },
+  ];
+
+  const [intent, setIntent] = useState("solution");
   const [keywords, setKeywords] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState<{
@@ -57,6 +102,8 @@ export default function Dashboard() {
     contentPlan?: string;
   } | null>(null);
   const [additionalCommentary, setAdditionalCommentary] = useState("");
+  const [isKeywordTableOpen, setIsKeywordTableOpen] = useState(false);
+  const [tableData, setTableData] = useState<Keyword[]>([]);
 
   const LoadingSpinner = () => (
     <div className="flex justify-center items-center h-full">
@@ -64,7 +111,36 @@ export default function Dashboard() {
     </div>
   );
 
-  const handleSubmit = async (event: React.FormEvent) => {
+  const generateKeywords = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsLoading(true);
+    try {
+      const response = await fetch("/api/keyword-generator", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ intent, searchQuery: keywords }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate keywords");
+      }
+
+      const data = await response.json();
+      console.log("KEYWORDS: \n", data);
+      console.log("KEYWORDS data.keywordResults: \n", data.keywordResults);
+      setKeywords(data.keywordResults);
+      setTableData(transformKeywordsToTableData(data.keywordResults));
+      setIsKeywordTableOpen(true);
+    } catch (error) {
+      console.error("Error generating keywords:", error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const generateArticle = async (event: React.FormEvent) => {
     event.preventDefault();
     setIsLoading(true);
     try {
@@ -73,7 +149,7 @@ export default function Dashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ contentType, searchQuery: keywords }),
+        body: JSON.stringify({ intent, searchQuery: keywords }),
       });
 
       if (!response.ok) {
@@ -101,7 +177,7 @@ export default function Dashboard() {
     }
   };
 
-  const handleRegenerate = async () => {
+  const regenerateArticle = async () => {
     setIsLoading(true);
     try {
       const response = await fetch("/api/article-regenerator", {
@@ -287,7 +363,7 @@ export default function Dashboard() {
           >
             <form
               className="grid w-full items-start gap-6"
-              onSubmit={handleSubmit}
+              onSubmit={generateArticle}
             >
               <fieldset className="grid gap-6 rounded-lg border p-4">
                 <legend className="-ml-1 px-1 text-sm font-medium">
@@ -295,7 +371,7 @@ export default function Dashboard() {
                 </legend>
                 <div className="grid gap-3">
                   <Label htmlFor="model">Intent</Label>
-                  <Select onValueChange={setContentType}>
+                  <Select onValueChange={setIntent}>
                     <SelectTrigger
                       id="model"
                       className="items-start [&_[data-description]]:hidden"
@@ -382,10 +458,20 @@ export default function Dashboard() {
                     onChange={(e) => setKeywords(e.target.value)}
                   />
                 </div>
-                <Button type="submit" size="sm" className="ml-auto gap-1.5">
-                  Generate Article
-                  <CornerDownLeft className="size-3.5" />
-                </Button>
+                <div className="flex w-full justify-between">
+                  <Button
+                    size="sm"
+                    className="gap-1.5"
+                    onClick={generateKeywords}
+                  >
+                    Generate Keywords
+                    <CornerDownLeft className="size-3.5" />
+                  </Button>
+                  <Button type="submit" size="sm" className="ml-auto gap-1.5">
+                    Generate Article
+                    <CornerDownLeft className="size-3.5" />
+                  </Button>
+                </div>
               </fieldset>
             </form>
           </div>
@@ -428,7 +514,7 @@ export default function Dashboard() {
               x-chunk="A form for sending a directions to AI agents. The form has a textarea and buttons to upload files and record audio."
               onSubmit={(e) => {
                 e.preventDefault();
-                handleRegenerate();
+                regenerateArticle();
               }}
             >
               <Label htmlFor="additionalCommentary" className="sr-only">
@@ -467,6 +553,26 @@ export default function Dashboard() {
               </div>
             </form>
           </div>
+          {/* Keyword Data table pop up */}
+          <Dialog
+            open={isKeywordTableOpen}
+            onOpenChange={setIsKeywordTableOpen}
+          >
+            <DialogContent className="sm:max-w-[80%]">
+              <DialogHeader>
+                <DialogTitle>Generated Keywords</DialogTitle>
+                <DialogClose />
+              </DialogHeader>
+              <div className="mt-4">
+                <DataTable columns={columns} data={tableData} />
+              </div>
+              <div className="mt-4 flex justify-end">
+                <Button onClick={() => setIsKeywordTableOpen(false)}>
+                  Close
+                </Button>
+              </div>
+            </DialogContent>
+          </Dialog>
         </main>
       </div>
     </div>

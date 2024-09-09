@@ -1,5 +1,5 @@
-import { EditorAgent, Agent } from './agents';
-import ContentCreatorAgent from './contentcreatorAgent';
+import { EditorAgent, Agent } from './agents/agents';
+import ContentCreatorAgent from './agents/contentcreatorAgent';
 import OpenAI from 'openai';
 
 class ArticleRegenerator {
