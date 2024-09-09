@@ -31,21 +31,23 @@ class ContentCreatorAgent extends Agent {
         3. Include relevant examples, statistics, or case studies to support main points.
         4. Ensure smooth transitions between sections for a cohesive reading experience.
         5. Use varied sentence structures and paragraph lengths for better readability.
-        6. Do not use statements like "In conclusion" or "In summary" or "This article will..." or "Did you know..."
+        6. Do not use hackneyed statements like "In conclusion" or "In summary" or "This article will..." or "Did you know..."
         7. Do not include statements suggesting to consult with a healthcare provider. 
         8. Do not explicitly ask the readers to share the article.
+        9. Do not make up fake stories or testimonials. 
+        10. Prioritize accuracy and specificity. General statements like "many studies have shown that..." are not allowed. Cite your sources.
 
         Please generate the full article based on these guidelines.`;
 
       const response = await this.aiClient.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o",
         messages: [
           { role: "system", content: "You are a helpful assistant that generates content based on a given plan." },
           { role: "user", content: prompt }
         ],
       }); 
 
-      console.log(response.choices[0].message.content);
+      //console.log(response.choices[0].message.content);
       return response.choices[0].message.content;
     }
 
@@ -53,7 +55,7 @@ class ContentCreatorAgent extends Agent {
 
       // Previous Content Plan:
       // ${previousOutput.contentPlan}
-      
+
       const prompt = `Regenerate the following article based on the additional commentary:
     
     Previous Article Title:
@@ -87,7 +89,7 @@ class ContentCreatorAgent extends Agent {
       try {
         const parsedResponse = JSON.parse(response.choices[0].message.content);
 
-        console.log("CHECKING RESPONSE FORMAT - parsedResponse ", parsedResponse);
+        //console.log("CHECKING RESPONSE FORMAT - parsedResponse ", parsedResponse);
 
 
         return {contentPlan: parsedResponse.contentPlan, articleTitle: parsedResponse.articleTitle, articleContent: parsedResponse.articleContent};

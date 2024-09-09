@@ -14,25 +14,6 @@ abstract class Agent {
   abstract executeTask(inputData: any): Promise<any>;
 }
 
-class SEOOptimizerAgent extends Agent {
-  async executeTask(inputData: any): Promise<any> {
-    const contentPlan = inputData.contentPlan || {};
-    const keywords = this.identifyKeywords(contentPlan);
-    const metadata = await this.generateMetadata(keywords);
-    return { seoOptimizedContent: { keywords, metadata } };
-  }
-
-  identifyKeywords(contentPlan: any): any {
-    // Implement keyword identification logic
-    return [];
-  }
-
-  async generateMetadata(keywords: any): Promise<any> {
-    // Use this.aiClient to generate metadata
-    return {};
-  }
-}
-
 class EditorAgent extends Agent {
   async executeTask(inputData: any): Promise<any> {
     const generatedContent = inputData.generatedContent || "";
@@ -52,4 +33,4 @@ class EditorAgent extends Agent {
   }
 }
 
-export { SEOOptimizerAgent, EditorAgent, Agent };
+export { EditorAgent, Agent };

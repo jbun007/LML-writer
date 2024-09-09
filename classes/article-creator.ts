@@ -1,8 +1,9 @@
-import { SEOOptimizerAgent, EditorAgent, Agent } from './agents';
+import { EditorAgent, Agent } from './agents';
 import OpenAI from 'openai';
 //import ResearchAgent from './researchAgent';
 import ContentPlannerAgent from './plannerAgent';
 import ContentCreatorAgent from './contentcreatorAgent';
+import seoOptimizerAgent from './seoAgent';
 
 interface GoogleSearchCredentials {
   apiKey: string;
@@ -26,9 +27,9 @@ class ArticleCreator {
     };
     this.agents = [
       //new ResearchAgent("Researcher", "research", this.aiClient, this.googleSearchCredentials),
-       new ContentPlannerAgent("Planner", "content_planning", this.aiClient),
-      // new SEOOptimizerAgent("SEO", "seo_optimization", this.aiClient),
-       new ContentCreatorAgent("Generator", "content_generation", this.aiClient),
+       //new ContentPlannerAgent("Planner", "content_planning", this.aiClient),
+       new seoOptimizerAgent("SEO", "seo_optimization", this.aiClient, this.googleSearchCredentials),
+      // new ContentCreatorAgent("Generator", "content_generation", this.aiClient),
       // new EditorAgent("Editor", "editing", this.aiClient)
     ];
   }

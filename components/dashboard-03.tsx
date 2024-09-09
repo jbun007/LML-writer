@@ -85,7 +85,7 @@ export default function Dashboard() {
         articleContent: string;
         contentPlan: string;
       } = await response.json();
-      console.log("DATA --- AAAAA: \n", data);
+      //console.log("DATA --- AAAAA: \n", data);
 
       // Update the output state with the correct structure
       setOutput({
@@ -120,7 +120,7 @@ export default function Dashboard() {
       }
 
       const data = await response.json();
-      console.log("REGENERATED DATA: \n", data);
+      //console.log("REGENERATED DATA: \n", data);
 
       setOutput({
         articleTitle: data.articleTitle,
