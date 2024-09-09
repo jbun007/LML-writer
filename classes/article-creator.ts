@@ -50,7 +50,8 @@ class ArticleCreator {
     return {
       contentPlan: data.contentPlan,
       articleTitle: data.articleTitle,
-      articleContent: data.articleContent
+      articleContent: data.articleContent,
+      seoResults: data.seoResults
     };
   }
 }
