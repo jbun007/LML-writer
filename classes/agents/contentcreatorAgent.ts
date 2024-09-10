@@ -11,13 +11,14 @@ class ContentCreatorAgent extends Agent {
         // Existing logic for initial content generation
         const contentPlan = inputData.contentPlan || {};
         const articleTitle = inputData.articleTitle || {};
+        const keywords = inputData.keywords || {};
         //seo optimized output
-        const generatedContent = await this.generateContent(contentPlan, articleTitle);
+        const generatedContent = await this.generateContent(contentPlan, articleTitle, keywords);
         return { articleContent: generatedContent };
       }
     }
   
-    async generateContent(contentPlan: any, articleTitle: any): Promise<any> {
+    async generateContent(contentPlan: any, articleTitle: any, keywords: any): Promise<any> {
       // Use this.aiClient to generate content
       const prompt = `Create a detailed and engaging article based on the following content plan:
       
@@ -36,6 +37,7 @@ class ContentCreatorAgent extends Agent {
         8. Do not explicitly ask the readers to share the article.
         9. Do not make up fake stories or testimonials. 
         10. Prioritize accuracy and specificity. General statements like "many studies have shown that..." are not allowed. Cite your sources.
+        11. Incorporate the following keywords: ${keywords} into the article.
 
         Please generate the full article based on these guidelines.`;
 

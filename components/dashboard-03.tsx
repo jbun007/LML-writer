@@ -94,6 +94,7 @@ export default function Dashboard() {
   ];
 
   const [intent, setIntent] = useState("solution");
+  const [mainIdea, setMainIdea] = useState("");
   const [keywords, setKeywords] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState<{
@@ -120,7 +121,7 @@ export default function Dashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ intent, searchQuery: keywords }),
+        body: JSON.stringify({ intent: intent, mainIdea: mainIdea }),
       });
 
       if (!response.ok) {
@@ -128,8 +129,6 @@ export default function Dashboard() {
       }
 
       const data = await response.json();
-      console.log("KEYWORDS: \n", data);
-      console.log("KEYWORDS data.keywordResults: \n", data.keywordResults);
       setKeywords(data.keywordResults);
       setTableData(transformKeywordsToTableData(data.keywordResults));
       setIsKeywordTableOpen(true);
@@ -149,7 +148,11 @@ export default function Dashboard() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ intent, searchQuery: keywords }),
+        body: JSON.stringify({
+          intent: intent,
+          mainIdea: mainIdea,
+          keywords: keywords,
+        }),
       });
 
       if (!response.ok) {
@@ -371,7 +374,7 @@ export default function Dashboard() {
                 </legend>
                 <div className="grid gap-3">
                   <Label htmlFor="model">Intent</Label>
-                  <Select onValueChange={setIntent}>
+                  <Select onValueChange={(value) => setIntent(value)}>
                     <SelectTrigger
                       id="model"
                       className="items-start [&_[data-description]]:hidden"
@@ -455,7 +458,7 @@ export default function Dashboard() {
                     id="content"
                     placeholder="Keywords for content generation."
                     className="min-h-[9.5rem]"
-                    onChange={(e) => setKeywords(e.target.value)}
+                    onChange={(e) => setMainIdea(e.target.value)}
                   />
                 </div>
                 <div className="flex w-full justify-between">

@@ -32,8 +32,10 @@ class ArticleCreator {
     ];
   }
 
-  async execute(contentType: string, searchQuery: string): Promise<any | undefined> {
-    let data: { [key: string]: any } = { contentType, searchQuery };
+  async execute(intent: string, mainIdea: string, keywords: string): Promise<any | undefined> {
+    let data: { [key: string]: any } = { intent, mainIdea, keywords};
+    console.log("Intent: \n", intent)
+    console.log("Main Idea: \n", mainIdea)
 
     for (const agent of this.agents) {
       try {

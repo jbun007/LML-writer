@@ -11,7 +11,7 @@ class keywordAgent extends Agent {
     }
   
     async executeTask(inputData: any): Promise<any> {
-      const userInput = inputData.searchQuery;
+      const userInput = inputData.mainIdea;
       const targetIntent = inputData.intent;
       let intent = "";
 

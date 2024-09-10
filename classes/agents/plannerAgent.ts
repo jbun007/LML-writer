@@ -3,13 +3,14 @@ import { Agent } from './agents';
 class ContentPlannerAgent extends Agent {
     async executeTask(inputData: any): Promise<any> {
       //const researchResults = inputData.researchResults || {};
-      const searchQuery = inputData.searchQuery;
-      const contentType = inputData.contentType;
+      const mainIdea = inputData.mainIdea;
+      const intent = inputData.intent;
+      const keywords = inputData.keywords;
       const targetAudience = inputData.targetAudience;
       const articleLength = inputData.articleLength;
 
       //outline sections
-      const outline = await this.outlineSections(targetAudience, searchQuery, articleLength);
+      const outline = await this.outlineSections(targetAudience, mainIdea, articleLength, keywords);
 
       //supporting points
       //const supportingPoints = await this.supportingPoints(outline);
@@ -19,7 +20,7 @@ class ContentPlannerAgent extends Agent {
 
       //generate content plan
       //const contentPlan = await this.generateContentPlan(objective, outline, supportingPoints, references, style);
-      const contentPlan = await this.generateContentPlan(outline);
+      const contentPlan = await this.generateContentPlan(outline, keywords);
 
       //refine plan
       //const refinedPlan = await this.refinePlan(contentPlan);
@@ -33,7 +34,9 @@ class ContentPlannerAgent extends Agent {
       return { contentPlan: contentPlan, articleTitle: articleTitle };
     }
 
-    async outlineSections(targetAudience: string, searchQuery: string, articleLength: string): Promise<any> {
+    async outlineSections(targetAudience: string, searchQuery: string, articleLength: string, keywords: string): Promise<any> {
+
+      console.log("Keywords (in the outlineSections function): ", keywords);
 
       let length: string;
       if (articleLength === "short") {
@@ -52,9 +55,39 @@ class ContentPlannerAgent extends Agent {
 
       const objective = `Create a detailed content plan for an article that aims to educate ${targetAudience} about ${searchQuery}. The objective is to inform and inspire the readers. We want readers to organically share the article with their circle of influences. The article should be roughly ${length} words.`;
 
-      const prompt = `Based on the content objective: "${objective}", provide an outline of the main sections that should be included in the article. Each section should build upon the previous one to create a cohesive and engaging narrative. Make sure to revolve the narrative around the core idea: ${searchQuery}. Restate the objective about the outline in your response.`;
+      const prompt = `Create an article outline based on the following:
 
-      console.log("Outline prompt: ", prompt);
+        Content Objective: "${objective}"
+        Core Idea: ${searchQuery}
+
+        Instructions:
+        1. Provide a structured outline with main sections and subsections.
+        2. Ensure each section builds upon the previous one for a cohesive narrative.
+        3. Keep the core idea (${searchQuery}) central to the entire outline.
+        4. Include 3-5 main sections, each with 2-3 subsections.
+        5. Start with an introduction and end with a conclusion.
+        6. Implement the following keywords: ${keywords} into the outline.
+
+        Output Format:
+        I. [Introduction Title]
+          A. [Subsection]
+        II. [Main Section 1]
+            A. [Subsection]
+            B. [Subsection]
+        III. [Main Section 2]
+            A. [Subsection]
+            B. [Subsection]
+        IV. [Main Section 3]
+            A. [Subsection]
+            B. [Subsection]
+        V. [Conclusion Title]
+          A. [Subsection]
+
+        Before the outline, briefly restate the content objective in your own words.
+
+        Generate the outline now:`;
+
+      console.log("Outline prompt: \n", prompt);
 
       const response = await this.aiClient.chat.completions.create({
           model: "gpt-3.5-turbo",
@@ -67,9 +100,10 @@ class ContentPlannerAgent extends Agent {
       return response.choices[0].message.content.trim();
   }
   
-    async generateContentPlan(outline: string): Promise<any> {
+    async generateContentPlan(outline: string, keywords: string): Promise<any> {
       // Use this.aiClient to generate content plan
-      const prompt = `Generate a content plan for an article with the following outline: ${outline}.`;
+      const prompt = `Generate a content plan for an article with the following outline: ${outline}.
+      Incorporate the following keywords: ${keywords} into the content plan.`;
       //The supporting points are the following: ${supportingPoints}. The references are the following: ${references}. The style of the article is the following: ${style}
 
       const response = await this.aiClient.chat.completions.create({

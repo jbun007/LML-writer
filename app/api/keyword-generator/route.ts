@@ -2,12 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import KeywordGenerator from '@/classes/keyword-generator';
 
 export async function POST(req: NextRequest) {
-  const { intent, searchQuery } = await req.json();
+  const { intent, mainIdea } = await req.json();
 
   try {
     const keywordGenerator = new KeywordGenerator();
 
-    return NextResponse.json(await keywordGenerator.execute(intent, searchQuery));
+    return NextResponse.json(await keywordGenerator.execute(intent, mainIdea));
 
 
   } catch (error) {

@@ -27,8 +27,8 @@ class KeywordGenerator {
     ];
   }
 
-  async execute(intent: string, searchQuery: string): Promise<any | undefined> {
-    let data: { [key: string]: any } = { intent, searchQuery };
+  async execute(intent: string, mainIdea: string): Promise<any | undefined> {
+    let data: { [key: string]: any } = { intent, mainIdea };
 
     for (const agent of this.agents) {
       try {

@@ -2,14 +2,14 @@ import { NextRequest, NextResponse } from 'next/server';
 import ArticleCreator from '@/classes/article-creator';
 
 export async function POST(req: NextRequest) {
-  const { contentType, searchQuery } = await req.json();
+  const { intent, mainIdea, keywords } = await req.json();
 
   try {
     const articleCreator = new ArticleCreator();
     // const result = await articleCreator.execute(contentType, searchQuery);
     // return NextResponse.json({ result });
 
-    return NextResponse.json(await articleCreator.execute(contentType, searchQuery));
+    return NextResponse.json(await articleCreator.execute(intent, mainIdea, keywords));
 
 
   } catch (error) {
