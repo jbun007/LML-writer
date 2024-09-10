@@ -95,7 +95,6 @@ export default function Dashboard() {
 
   const [intent, setIntent] = useState("solution");
   const [mainIdea, setMainIdea] = useState("");
-  const [keywords, setKeywords] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState<{
     articleTitle: string;
@@ -105,6 +104,7 @@ export default function Dashboard() {
   const [additionalCommentary, setAdditionalCommentary] = useState("");
   const [isKeywordTableOpen, setIsKeywordTableOpen] = useState(false);
   const [tableData, setTableData] = useState<Keyword[]>([]);
+  const [selectedKeywords, setSelectedKeywords] = useState<string>("");
 
   const LoadingSpinner = () => (
     <div className="flex justify-center items-center h-full">
@@ -129,7 +129,7 @@ export default function Dashboard() {
       }
 
       const data = await response.json();
-      setKeywords(data.keywordResults);
+
       setTableData(transformKeywordsToTableData(data.keywordResults));
       setIsKeywordTableOpen(true);
     } catch (error) {
@@ -143,6 +143,8 @@ export default function Dashboard() {
     event.preventDefault();
     setIsLoading(true);
     try {
+      console.log("SELECTED KEYWORDS: ", selectedKeywords);
+
       const response = await fetch("/api/article-creator", {
         method: "POST",
         headers: {
@@ -151,7 +153,7 @@ export default function Dashboard() {
         body: JSON.stringify({
           intent: intent,
           mainIdea: mainIdea,
-          keywords: keywords,
+          keywords: selectedKeywords ? selectedKeywords : "",
         }),
       });
 
@@ -567,7 +569,15 @@ export default function Dashboard() {
                 <DialogClose />
               </DialogHeader>
               <div className="mt-4">
-                <DataTable columns={columns} data={tableData} />
+                <DataTable
+                  columns={columns}
+                  data={tableData}
+                  onSelectionChange={(selectedRows) =>
+                    setSelectedKeywords(
+                      selectedRows.map((row) => row.keyword).join(", ")
+                    )
+                  }
+                />
               </div>
               <div className="mt-4 flex justify-end">
                 <Button onClick={() => setIsKeywordTableOpen(false)}>

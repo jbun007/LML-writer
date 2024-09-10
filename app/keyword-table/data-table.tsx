@@ -26,14 +26,17 @@ import { Button } from "@/components/ui/button";
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
+  onSelectionChange: (selectedRows: TData[]) => void;
 }
 
 export function DataTable<TData, TValue>({
   columns,
   data,
+  onSelectionChange,
 }: DataTableProps<TData, TValue>) {
   const [sorting, setSorting] = React.useState<SortingState>([]);
   const [rowSelection, setRowSelection] = React.useState({});
+
   const table = useReactTable({
     data,
     columns,
@@ -47,6 +50,16 @@ export function DataTable<TData, TValue>({
       rowSelection,
     },
   });
+
+  React.useEffect(() => {
+    if (onSelectionChange) {
+      const selectedRows = table
+        .getFilteredSelectedRowModel()
+        .rows.map((row) => row.original);
+      onSelectionChange(selectedRows);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [rowSelection, onSelectionChange]);
 
   return (
     <div>
