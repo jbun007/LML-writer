@@ -29,11 +29,9 @@ class ArticleRegenerator {
     }
 
     return {
-        //only return the article content 
-        articleContent: data.articleContent
-    //   contentPlan: data.contentPlan,
-    //   articleTitle: data.articleTitle,
-    //   articleContent: data.articleContent
+       articleContent: data.articleContent,
+       articleTitle: data.articleTitle,
+       articleDescription: data.articleDescription
     };
   }
 }

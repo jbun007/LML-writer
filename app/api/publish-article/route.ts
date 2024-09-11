@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   const supabase = createServiceRoleClient();
 
   //const slug = generateSlug(title);
-  const slug = "sample-slug3";
+  const slug = "sample-slug6";
 
   const newBlogEntry: Partial<BlogsTable> = {
     title,

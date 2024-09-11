@@ -178,6 +178,7 @@ export default function Dashboard() {
       setOutput({
         articleTitle: data.articleTitle,
         articleContent: data.articleContent,
+        articleDescription: data.articleDescription,
         // contentPlan: data.contentPlan,
       });
     } catch (error) {

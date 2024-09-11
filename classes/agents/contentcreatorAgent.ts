@@ -55,9 +55,6 @@ class ContentCreatorAgent extends Agent {
 
     async regenerateContent(previousOutput: any, additionalCommentary: string): Promise<any> {
 
-      // Previous Content Plan:
-      // ${previousOutput.contentPlan}
-
       const prompt = `Task: Regenerate an article based on previous content and new feedback.
 
         Input:
@@ -107,22 +104,13 @@ class ContentCreatorAgent extends Agent {
         ],
         response_format: zodResponseFormat(responseFormat, "regeneratedContent")
       });
-    
-      // // Assuming the AI returns a structured response with contentPlan, articleTitle, and articleContent
-      // const regeneratedContent = JSON.parse(response.choices[0].message.content);
-      // return {
-      //   contentPlan: regeneratedContent.contentPlan,
-      //   articleTitle: regeneratedContent.articleTitle,
-      //   articleContent: regeneratedContent.articleContent
-      // };
       
       try {
         const parsedResponse = JSON.parse(response.choices[0].message.content);
 
         //console.log("CHECKING RESPONSE FORMAT - parsedResponse ", parsedResponse);
 
-
-        return {contentPlan: parsedResponse.contentPlan, articleTitle: parsedResponse.articleTitle, articleContent: parsedResponse.articleContent};
+        return {articleDescription: parsedResponse.articleDescription, articleTitle: parsedResponse.articleTitle, articleContent: parsedResponse.articleContent};
       } catch (error) {
         console.error("Error parsing response:", error);
         throw new Error("Failed to parse the AI response");
@@ -131,7 +119,6 @@ class ContentCreatorAgent extends Agent {
 }
 
 const responseFormat = z.object({
-  //contentPlan: z.string(),
   articleTitle: z.string(),
   articleDescription: z.string(),
   articleContent: z.string()
