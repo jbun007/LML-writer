@@ -89,8 +89,6 @@ class ContentPlannerAgent extends Agent {
 
         Generate the outline now:`;
 
-      console.log("Outline prompt: \n", prompt);
-
       const response = await this.aiClient.chat.completions.create({
           model: "gpt-3.5-turbo",
           messages: [
@@ -98,7 +96,7 @@ class ContentPlannerAgent extends Agent {
               { role: "user", content: prompt }
           ]
       });
-      console.log(response.choices[0].message.content.trim());
+      //console.log(response.choices[0].message.content.trim());
       return response.choices[0].message.content.trim();
   }
   
