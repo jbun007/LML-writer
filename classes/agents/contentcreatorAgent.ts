@@ -58,18 +58,46 @@ class ContentCreatorAgent extends Agent {
       // Previous Content Plan:
       // ${previousOutput.contentPlan}
 
-      const prompt = `Regenerate the following article based on the additional commentary:
-    
-    Previous Article Title:
-    ${previousOutput.articleTitle}
-    
-    Previous Article Content:
-    ${previousOutput.articleContent}
-    
-    Additional Commentary:
-    ${additionalCommentary}
-    
-    Please regenerate the article, incorporating the feedback and additional instructions provided. Return the updated content plan, article title, and article content according to the response format. The values should be in markdown.`;
+      const prompt = `Task: Regenerate an article based on previous content and new feedback.
+
+        Input:
+        1. Previous Article Title: "${previousOutput.articleTitle}"
+        3. Previous Article Content: "${previousOutput.articleContent}"
+        4. Additional Commentary: "${additionalCommentary}"
+
+        Instructions:
+        1. Carefully review the previous article content and the additional commentary.
+        2. Incorporate the feedback and new instructions into the regenerated article.
+        3. Maintain the original topic and core message while improving based on the feedback.
+        4. Ensure the content is engaging, well-structured, and flows logically.
+
+        Output Requirements:
+        1. Article Title:
+          - Create a compelling, SEO-friendly title.
+          - Use plain text, no markdown.
+          - Aim for 50-60 characters.
+
+        2. Article Description:
+          - Write a concise summary for SEO meta description.
+          - Use plain text, no markdown.
+          - Aim for 150-160 characters.
+          - Include primary keywords and capture the essence of the article.
+
+        3. Article Content:
+          - Use markdown format.
+          - Maintain a clear structure with headings, subheadings, and paragraphs.
+          - Include relevant examples, data, or quotes to support key points.
+          - Aim for comprehensive coverage of the topic.
+          - Ensure readability and engagement throughout.
+
+        Response Format:
+        {
+          "articleTitle": "Your generated title here",
+          "articleDescription": "Your generated description here",
+          "articleContent": "Your full article content in markdown here"
+        }
+
+        Note: Provide only the JSON response as specified above, without any additional explanation or commentary.`;
     
       const response = await this.aiClient.chat.completions.create({
         model: "gpt-4o-2024-08-06",
@@ -105,6 +133,7 @@ class ContentCreatorAgent extends Agent {
 const responseFormat = z.object({
   //contentPlan: z.string(),
   articleTitle: z.string(),
+  articleDescription: z.string(),
   articleContent: z.string()
 });
 

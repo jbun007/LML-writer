@@ -51,6 +51,7 @@ class ArticleCreator {
       contentPlan: data.contentPlan,
       articleTitle: data.articleTitle,
       articleContent: data.articleContent,
+      articleDescription: data.articleDescription,
     };
   }
 }

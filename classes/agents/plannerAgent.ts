@@ -1,4 +1,6 @@
 import { Agent } from './agents';
+import { z } from 'zod';
+import { zodResponseFormat } from "openai/helpers/zod";
 
 class ContentPlannerAgent extends Agent {
     async executeTask(inputData: any): Promise<any> {
@@ -26,12 +28,12 @@ class ContentPlannerAgent extends Agent {
       //const refinedPlan = await this.refinePlan(contentPlan);
 
       //generate title
-      const articleTitle = await this.generateTitle(contentPlan);
+      const articleMetadata = await this.generateTitle_Description(contentPlan);
 
 
       //Suggest where visuals, graphs, images, or other media could be incorporated to enhance the content. Provide ideas on the type of visuals that would best complement each section
 
-      return { contentPlan: contentPlan, articleTitle: articleTitle };
+      return { contentPlan: contentPlan, articleTitle: articleMetadata.articleTitle, articleDescription: articleMetadata.articleDescription };
     }
 
     async outlineSections(targetAudience: string, searchQuery: string, articleLength: string, keywords: string): Promise<any> {
@@ -163,20 +165,51 @@ class ContentPlannerAgent extends Agent {
     //     return response.choices[0].message.content.trim();
     // }
 
-    async generateTitle(contentPlan: string): Promise<any> {
+    async generateTitle_Description(contentPlan: string): Promise<any> {
       // Use this.aiClient to generate title
-      const prompt = `Generate a title that is sophisticated, intriguing, and evokes curiosity, similar to the style of The Atlantic or The New Yorker, based on the following idea: ${contentPlan}. The title should suggest depth and nuance. Avoid cliches and sensationalism. It must be both engaging and thought-provoking, appealing to readers who enjoy in-depth well-researched articles. Here's a few good examples: 'Creatine’s Hidden Potential: Beyond Muscle, How It Fuels the Modern Mind,' 'Collagen’s Promise: Separating Myth from Medicine in the Pursuit of Youth.' Return only the title as a string.`;
+      const prompt = `Task: Generate a sophisticated article title and description.
+          The description will be used as the meta description for the article.
+
+          Content: ${contentPlan}
+
+          Style Guidelines:
+          1. Emulate the depth and nuance of The Atlantic or The New Yorker.
+          2. Evoke curiosity and suggest intellectual depth.
+          3. Appeal to readers who enjoy well-researched, in-depth articles.
+          4. Be engaging and thought-provoking.
+
+          Requirements:
+          1. Avoid clichés and sensationalism.
+          2. Incorporate a subtle play on words or a clever turn of phrase, if appropriate.
+          3. Aim for 6-12 words.
+          4. Use clear, concise language.
+
+          Examples of effective titles:
+          - "Creatine's Hidden Potential: Beyond Muscle, How It Fuels the Modern Mind"
+          - "Collagen's Promise: Separating Myth from Medicine in the Pursuit of Youth"
+
+          Output: Provide only the generated title and descriptions as strings, without quotation marks or additional commentary.`;
 
       const response = await this.aiClient.chat.completions.create({
-        model: "gpt-3.5-turbo",
+        model: "gpt-4o-2024-08-06",
         messages: [
-          { role: "system", content: "You are a helpful assistant that generates high-quality, intriguing titles similar to those found in publications like The Atlantic and New Yorker." },
+          { role: "system", content: "You are a helpful assistant that generates high-quality, intriguing blog titles and descriptions." },
           { role: "user", content: prompt }
-        ]
+        ],
+        response_format: zodResponseFormat(responseFormat, "articleMetadata")
       });
 
-      return response.choices[0].message.content.trim();
+      //console.log("Article metadata: \n", response.choices[0].message.content.trim());
+      const parsedResponse = JSON.parse(response.choices[0].message.content.trim());
+
+      return parsedResponse;
     }
   }
+
+  const responseFormat = z.object({
+    articleTitle: z.string(),
+    articleDescription: z.string()
+  });
+  
 
 export default ContentPlannerAgent;

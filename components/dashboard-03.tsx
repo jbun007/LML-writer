@@ -62,37 +62,6 @@ import { DataTable } from "@/app/keyword-table/data-table";
 import { transformKeywordsToTableData } from "@/utils/dataTransform";
 
 export default function Dashboard() {
-  const sampleData = [
-    {
-      id: "What are the benefits of ashwagandha?",
-      keyword: "What are the benefits of ashwagandha?",
-      search_volume: 100,
-      competition: 20,
-      page_bid: 3.1,
-    },
-    {
-      id: "ashwagandha testosterone",
-      keyword: "ashwagandha testosterone",
-      search_volume: 125,
-      competition: 20,
-      page_bid: 3.2,
-    },
-    {
-      id: "ashwagandha anxiety relief",
-      keyword: "ashwagandha anxiety relief",
-      search_volume: 125,
-      competition: 20,
-      page_bid: 1.4,
-    },
-    {
-      id: "ashwagandha sleep aid",
-      keyword: "ashwagandha sleep aid",
-      search_volume: 125,
-      competition: 20,
-      page_bid: 1.0,
-    },
-  ];
-
   const [intent, setIntent] = useState("solution");
   const [mainIdea, setMainIdea] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -100,6 +69,7 @@ export default function Dashboard() {
     articleTitle: string;
     articleContent: string;
     contentPlan?: string;
+    articleDescription?: string;
   } | null>(null);
   const [additionalCommentary, setAdditionalCommentary] = useState("");
   const [isKeywordTableOpen, setIsKeywordTableOpen] = useState(false);
@@ -165,6 +135,7 @@ export default function Dashboard() {
         articleTitle: string;
         articleContent: string;
         contentPlan: string;
+        articleDescription: string;
       } = await response.json();
       //console.log("DATA --- AAAAA: \n", data);
 
@@ -173,6 +144,7 @@ export default function Dashboard() {
         articleTitle: data.articleTitle,
         articleContent: data.articleContent,
         contentPlan: data.contentPlan,
+        articleDescription: data.articleDescription,
       });
       // console.log("\n OUTPUT: \n", output);
     } catch (error) {
@@ -212,6 +184,43 @@ export default function Dashboard() {
       console.error("Error regenerating article:", error);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const publishArticle = async () => {
+    if (!output || !selectedKeywords) {
+      console.error("No article or keywords to publish");
+      return;
+    }
+
+    const keywordsArray = selectedKeywords
+      .split(",")
+      .map((keyword) => keyword.trim());
+
+    try {
+      const response = await fetch("/api/publish-article", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          title: output.articleTitle,
+          content: output.articleContent,
+          keywords: keywordsArray,
+          description: output.articleDescription,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to publish article");
+      }
+
+      const result = await response.json();
+      console.log("Article published successfully:", result);
+      // You can add a success message or notification here
+    } catch (error) {
+      console.error("Error publishing article:", error);
+      // You can add an error message or notification here
     }
   };
 
@@ -554,6 +563,14 @@ export default function Dashboard() {
                 <Button type="submit" size="sm" className="ml-auto gap-1.5">
                   Regenerate Article
                   <CornerDownLeft className="size-3.5" />
+                </Button>
+                <Button
+                  type="button"
+                  size="sm"
+                  className="ml-2 gap-1.5 bg-green-500 hover:bg-green-600 text-white"
+                  onClick={publishArticle}
+                >
+                  Publish
                 </Button>
               </div>
             </form>
