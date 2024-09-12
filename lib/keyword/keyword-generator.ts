@@ -1,7 +1,7 @@
-import { Agent } from './agents/agents';
+import { Agent } from '../agents/agents';
 import OpenAI from 'openai';
-import keywordAgent from './agents/keywordAgent';
-
+import keywordAgent from '../agents/keywordAgent';
+import { SharedContext } from '../sharedContext';
 interface GoogleSearchCredentials {
   apiKey: string;
   cseId: string;
@@ -9,10 +9,11 @@ interface GoogleSearchCredentials {
 
 interface AIClient extends OpenAI {}
 
-class KeywordGenerator {
+export default class KeywordGenerator {
   aiClient: AIClient;
   googleSearchCredentials: GoogleSearchCredentials;
   agents: Agent[];
+  private sharedContext: SharedContext;
 
   constructor() {
     this.aiClient = new OpenAI({
@@ -22,8 +23,9 @@ class KeywordGenerator {
       apiKey: process.env.GOOGLE_API_KEY || '',
       cseId: process.env.GOOGLE_CSE_ID || '',
     };
+    this.sharedContext = new SharedContext();
     this.agents = [
-       new keywordAgent("keyword", "keyword_generation", this.aiClient, this.googleSearchCredentials),
+       new keywordAgent("keyword", "keyword_generation", this.aiClient, this.googleSearchCredentials, this.sharedContext),
     ];
   }
 
@@ -46,4 +48,3 @@ class KeywordGenerator {
   }
 }
 
-export default KeywordGenerator;

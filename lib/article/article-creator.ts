@@ -1,8 +1,9 @@
-import { EditorAgent, Agent } from './agents/agents';
+import { EditorAgent, Agent } from '../agents/agents';
 import OpenAI from 'openai';
 //import ResearchAgent from './researchAgent';
-import ContentPlannerAgent from './agents/plannerAgent';
-import ContentCreatorAgent from './agents/contentcreatorAgent';
+import ContentPlannerAgent from '../agents/plannerAgent';
+import ContentCreatorAgent from '../agents/contentcreatorAgent';
+import { SharedContext } from '../sharedContext';
 
 interface GoogleSearchCredentials {
   apiKey: string;
@@ -11,10 +12,11 @@ interface GoogleSearchCredentials {
 
 interface AIClient extends OpenAI {}
 
-class ArticleCreator {
+export default class ArticleCreator {
   aiClient: AIClient;
   googleSearchCredentials: GoogleSearchCredentials;
   agents: Agent[];
+  private sharedContext: SharedContext;
 
   constructor() {
     this.aiClient = new OpenAI({
@@ -24,10 +26,11 @@ class ArticleCreator {
       apiKey: process.env.GOOGLE_API_KEY || '',
       cseId: process.env.GOOGLE_CSE_ID || '',
     };
+    this.sharedContext = new SharedContext();
     this.agents = [
       //new ResearchAgent("Researcher", "research", this.aiClient, this.googleSearchCredentials),
-      new ContentPlannerAgent("Planner", "content_planning", this.aiClient),
-      new ContentCreatorAgent("Generator", "content_generation", this.aiClient),
+      new ContentPlannerAgent("Planner", "content_planning", this.aiClient, this.sharedContext),
+      new ContentCreatorAgent("Generator", "content_generation", this.aiClient, this.sharedContext),
       // new EditorAgent("Editor", "editing", this.aiClient)
     ];
   }
@@ -47,6 +50,8 @@ class ArticleCreator {
       }
     }
 
+    //return just "content instead?
+
     return {
       contentPlan: data.contentPlan,
       articleTitle: data.articleTitle,
@@ -55,5 +60,3 @@ class ArticleCreator {
     };
   }
 }
-
-export default ArticleCreator;

@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import ArticleCreator from '@/classes/article-creator';
+import ArticleCreator from '@/lib/article/article-creator';
 
 export async function POST(req: NextRequest) {
   const { intent, mainIdea, keywords } = await req.json();

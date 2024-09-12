@@ -5,8 +5,8 @@ import { zodResponseFormat } from "openai/helpers/zod";
 class keywordAgent extends Agent {
     googleClient: any;
   
-    constructor(name: string, role: string, aiClient: any, googleClient: any) {
-      super(name, role, aiClient);
+    constructor(name: string, role: string, aiClient: any, googleClient: any, sharedContext: any) {
+      super(name, role, aiClient, sharedContext);
       this.googleClient = googleClient;
     }
   
@@ -43,18 +43,21 @@ class keywordAgent extends Agent {
   
       Instructions: 
       1. Return a list of the entities. Values should be strings
-      2. Do not return any other text besides the list of entities`;
+      2. Do not return any other text besides the list of entities;`;
+
+      this.sharedContext.addMessage('user', prompt);
 
       try {
         const response = await this.aiClient.chat.completions.create({
           model: "gpt-4",
           messages: [
             { role: "system", content: "You are a helpful assistant that extracts entities from user input." },
-            { role: "user", content: prompt }
+            ...this.sharedContext.getMessages()
           ],
         });
 
         const entities = response.choices[0].message.content;
+        this.sharedContext.addMessage('assistant', entities);
 
         // Check if entities is empty
         if (!entities || entities.length === 0) {
@@ -101,7 +104,8 @@ class keywordAgent extends Agent {
             model: "gpt-4o-2024-08-06",
             messages: [
               { role: "system", content: `You are a helpful assistant that generates keywords for ${intent}` },
-              { role: "user", content: prompt }
+              { role: "user", content: prompt },
+              ...this.sharedContext.getMessages()
             ],
             response_format: zodResponseFormat(responseFormat, "generatedKeywords")
           });

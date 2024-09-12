@@ -1,17 +1,19 @@
-import { EditorAgent, Agent } from './agents/agents';
-import ContentCreatorAgent from './agents/contentcreatorAgent';
+import { EditorAgent, Agent } from '../agents/agents';
+import ContentCreatorAgent from '../agents/contentcreatorAgent';
 import OpenAI from 'openai';
-
-class ArticleRegenerator {
+import { SharedContext } from '../sharedContext';
+export default class ArticleRegenerator {
   aiClient: OpenAI;
   agents: Agent[];
+  private sharedContext: SharedContext;
 
   constructor() {
     this.aiClient = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
+    this.sharedContext = new SharedContext();
     this.agents = [
-      new ContentCreatorAgent("Regenerator", "content_regeneration", this.aiClient),
+      new ContentCreatorAgent("Regenerator", "content_regeneration", this.aiClient, this.sharedContext),
     ];
   }
 
@@ -35,5 +37,3 @@ class ArticleRegenerator {
     };
   }
 }
-
-export default ArticleRegenerator;

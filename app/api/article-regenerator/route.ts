@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import ArticleRegenerator from "@/classes/article-regenerator";
+import ArticleRegenerator from "@/lib/article/article-regenerator";
 
 export async function POST(req: NextRequest) {
     const { previousOutput, additionalCommentary } = await req.json();

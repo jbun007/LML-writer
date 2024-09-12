@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import KeywordGenerator from '@/classes/keyword-generator';
+import KeywordGenerator from '@/lib/keyword/keyword-generator';
 
 export async function POST(req: NextRequest) {
   const { intent, mainIdea } = await req.json();
