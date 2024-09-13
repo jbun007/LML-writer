@@ -70,6 +70,7 @@ export default function Dashboard() {
     articleContent: string;
     contentPlan?: string;
     articleDescription?: string;
+    sharedContext?: any;
   } | null>(null);
   const [additionalCommentary, setAdditionalCommentary] = useState("");
   const [isKeywordTableOpen, setIsKeywordTableOpen] = useState(false);
@@ -136,16 +137,12 @@ export default function Dashboard() {
         articleContent: string;
         contentPlan: string;
         articleDescription: string;
+        sharedContext: any;
       } = await response.json();
       //console.log("DATA --- AAAAA: \n", data);
 
       // Update the output state with the correct structure
-      setOutput({
-        articleTitle: data.articleTitle,
-        articleContent: data.articleContent,
-        contentPlan: data.contentPlan,
-        articleDescription: data.articleDescription,
-      });
+      setOutput(data);
       // console.log("\n OUTPUT: \n", output);
     } catch (error) {
       console.error("Error creating article:", error);
@@ -165,6 +162,7 @@ export default function Dashboard() {
         body: JSON.stringify({
           previousOutput: output,
           additionalCommentary,
+          sharedContext: output?.sharedContext,
         }),
       });
 
@@ -173,12 +171,13 @@ export default function Dashboard() {
       }
 
       const data = await response.json();
-      //console.log("REGENERATED DATA: \n", data);
+      //console.log("SHARED CONTEXT FOR REGENERATION: \n", output?.sharedContext);
 
       setOutput({
         articleTitle: data.articleTitle,
         articleContent: data.articleContent,
         articleDescription: data.articleDescription,
+        sharedContext: data.sharedContext,
         // contentPlan: data.contentPlan,
       });
     } catch (error) {

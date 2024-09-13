@@ -56,6 +56,8 @@ class keywordAgent extends Agent {
           ],
         });
 
+        console.log("shared context: \n", this.sharedContext.getMessages());
+
         const entities = response.choices[0].message.content;
         this.sharedContext.addMessage('assistant', entities);
 

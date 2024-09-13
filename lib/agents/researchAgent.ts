@@ -5,8 +5,8 @@ import { Agent } from './agents';
 class ResearchAgent extends Agent {
   googleClient: any;
 
-  constructor(name: string, role: string, aiClient: any, googleClient: any) {
-    super(name, role, aiClient);
+  constructor(name: string, role: string, aiClient: any, googleClient: any, sharedContext: any) {
+    super(name, role, aiClient, sharedContext);
     this.googleClient = googleClient;
   }
 

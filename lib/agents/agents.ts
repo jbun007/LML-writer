@@ -10,7 +10,7 @@ abstract class Agent {
     this.name = name;
     this.role = role;
     this.aiClient = aiClient;
-    this.sharedContext = new SharedContext();
+    this.sharedContext = sharedContext;
   }
 
   abstract executeTask(inputData: any): Promise<any>;

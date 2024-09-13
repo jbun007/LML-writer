@@ -4,7 +4,7 @@ type Message = {
 };
 
 export class SharedContext {
-  private messages: Message[] = [];
+  messages: Message[] = [];
 
   addMessage(role: 'system' | 'user' | 'assistant', content: string) {
     this.messages.push({ role, content });

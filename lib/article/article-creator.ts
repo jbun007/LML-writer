@@ -57,6 +57,7 @@ export default class ArticleCreator {
       articleTitle: data.articleTitle,
       articleContent: data.articleContent,
       articleDescription: data.articleDescription,
+      sharedContext: data.sharedContext
     };
   }
 }
