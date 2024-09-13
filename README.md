@@ -1,7 +1,6 @@
-lore research
+LORE-RESEARCH
 
 High priority:
-//memory preservation across agent threads
 
 Medium priority:
 //vector search for backlinks & references
@@ -11,16 +10,30 @@ Low priority:
 //content length input on plannerAgent
 
 //research agent:
+//leverage the model's pretrained data first
+//clean html extraction on ResearchAgent extractText method
+//gracefully handle 403 errors on textExtraction
 
-- leverage the model's pretrained data first
-- clean html extraction on ResearchAgent extractText method
-- gracefully handle 403 errors on textExtraction
+//COMPLETE:
 
-Base Prompt:
-I have a next.js project that takes a user's text input and runs it through various agents with the goal of generating a unique, compelling blog article in the health and wellness space.
+//pipeline for article creation
+//iterative content generation
+//add loading state to article creation
+//implement ability to re-prompt with additional instruction and feedback until satisfied
 
-These agents include:
+9/9 DAY SESSION
+//created keyword generator
+//data table UI for keywords
 
-- plannerAgent: plans the content layout
-- keywordAgent: generates keywords for SEO (short and long tail)
-- contentcreatorAgent: generates the blog content
+9/10 AFTER DARK SESSION
+//fixed bug with intent not being passed
+//pass keywords to the article generator
+// select keywords from the table
+
+9/10
+//set up database connection
+//database schema for blogs
+//publish article action w/ metadata / write to databae
+
+9/11
+//memory preservation across agent threads
