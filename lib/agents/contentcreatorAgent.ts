@@ -4,7 +4,6 @@ import { zodResponseFormat } from "openai/helpers/zod";
 import { SharedContext } from "../sharedContext";
 
 export default class ContentCreatorAgent extends Agent {
-
     constructor(name: string, role: string, aiClient: any, sharedContext: SharedContext) {
       super(name, role, aiClient, sharedContext);
     }

@@ -49,7 +49,7 @@ export default class ArticleCreator {
         // Handle error appropriately
       }
     }
-
+    
     //return just "content instead?
 
     return {
