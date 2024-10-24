@@ -52,7 +52,7 @@ async regenerateContent(previousOutput: any, additionalCommentary: string): Prom
         "articleContent": "Your full article content in markdown here"
       }
 
-      Note: Provide only the JSON response as specified above, without any additional explanation or commentary.`;
+      Note: Provide only the JSON response as specified in the response format, without any additional explanation or commentary.`;
 
       console.log("AAAAAshared context: \n", this.sharedContext);
 

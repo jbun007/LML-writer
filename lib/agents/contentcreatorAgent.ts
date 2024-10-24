@@ -39,7 +39,7 @@ export default class ContentCreatorAgent extends Agent {
         1. Incorporate the additional context provided to enrich the article with research-backed data.
         2. Follow the structure and key points outlined in the content plan.
         3. Use a conversational yet professional tone throughout the article.
-        4. Assume the reader is well-educated; however, avoid unnecessarily complex words or technical jargon.
+        4. Avoid unnecessarily complex words or technical jargon.
         5. Avoid a robotic tone.
         6. Include relevant examples, statistics, or case studies to support main points.
         7. Ensure smooth transitions between sections for a cohesive reading experience.
@@ -53,9 +53,35 @@ export default class ContentCreatorAgent extends Agent {
         15. Cite your sources.
         16. Incorporate the following keywords: ${keywords} into the article.
 
-        Please generate the full article based on these guidelines.`;
+        Please generate the full article based on these guidelines.
+        
+        Output Requirements:
+        1. Article Title:
+        - Create a compelling, SEO-friendly title.
+        - Use plain text, no markdown.
+        - Aim for under 60 characters.
 
-      this.sharedContext.addMessage('user', prompt);
+        2. Article Description:
+        - Write a concise summary for SEO meta description.
+        - Use plain text, no markdown.
+        - Aim for 150-160 characters.
+        - Include primary keywords and capture the essence of the article.
+
+       3. Article Content:
+        - Use markdown format.
+        - Maintain a clear structure with headings, subheadings, and paragraphs.
+        - Include relevant examples, data, or quotes to support key points.
+        - Aim for comprehensive coverage of the topic.
+        - Ensure readability and engagement throughout.
+
+      Response Format:
+      {
+        "articleTitle": "Your generated title here",
+        "articleDescription": "Your generated description here",
+        "articleContent": "Your full article content in markdown here"
+      }
+
+      Note: Provide only the JSON response as specified in the response format, without any additional explanation or commentary.`;
 
       const response = await this.aiClient.chat.completions.create({
         model: "gpt-4o",
@@ -63,16 +89,33 @@ export default class ContentCreatorAgent extends Agent {
           { role: "system", content: "You are a helpful assistant that generates content based on a given plan." },
           { role: "user", content: prompt }
         ],
+        response_format: zodResponseFormat(responseFormat, "generatedContent")
       }); 
 
-      this.sharedContext.addMessage('assistant', response.choices[0].message.content);
-
+      try {
+        const parsedResponse = JSON.parse(response.choices[0].message.content);
+        
+        //Update the sharedContext to pass to regeneratorAgent
+        this.sharedContext.addMessage('user', prompt);
+        this.sharedContext.addMessage('assistant', response.choices[0].message.content);
+  
+  
         return {
-          articleContent: response.choices[0].message.content,
-          sharedContext: this.sharedContext,
-        };
-      } catch (error: any) {
-        console.error('Error in ContentCreatorAgent:', error);
-        throw error;
+          articleDescription: parsedResponse.articleDescription, 
+          articleTitle: parsedResponse.articleTitle, 
+          articleContent: parsedResponse.articleContent,
+          sharedContext: this.sharedContext 
+      };
+      } catch (error) {
+        console.error("Error parsing response:", error);
+        throw new Error("Failed to parse the AI response");
       }
+      } 
   }
+
+
+  const responseFormat = z.object({
+    articleTitle: z.string(),
+    articleDescription: z.string(),
+    articleContent: z.string()
+});
