@@ -1,12 +1,12 @@
 import { EditorAgent, Agent } from '../agents/agents';
 import OpenAI from 'openai';
-//import ResearchAgent from './researchAgent';
 import ContentPlannerAgent from '../agents/plannerAgent';
 import ContentCreatorAgent from '../agents/contentcreatorAgent';
 import { SharedContext } from '../sharedContext';
+import { searchDatabase } from '../embeddings/vectorSearch'; // Import the searchDatabase function
 
 // Import the pipeline function from transformers.js
-import { pipeline } from '@xenova/transformers';
+import { pipeline, cos_sim } from '@xenova/transformers';
 
 // Extend the NodeJS Global interface to include our embedding pipeline promise
 declare global {
@@ -58,35 +58,62 @@ export default class ArticleCreator {
     };
     this.sharedContext = new SharedContext();
     this.agents = [
-      //new ResearchAgent("Researcher", "research", this.aiClient, this.googleSearchCredentials),
-      new ContentPlannerAgent("Planner", "content_planning", this.aiClient, this.sharedContext),
-      new ContentCreatorAgent("Generator", "content_generation", this.aiClient, this.sharedContext),
-      // new EditorAgent("Editor", "editing", this.aiClient)
+      new ContentPlannerAgent(
+        'Planner',
+        'content_planning',
+        this.aiClient,
+        this.sharedContext
+      ),
+      new ContentCreatorAgent(
+        'Generator',
+        'content_generation',
+        this.aiClient,
+        this.sharedContext
+      ),
     ];
 
     // Initialize the embedding pipeline by getting the singleton instance
     this.embeddingPipeline = getEmbeddingPipeline();
   }
 
-  async execute(
-    intent: string,
-    mainIdea: string,
-    keywords: string
-  ): Promise<any | undefined> {
+  async execute(intent: string, mainIdea: string, keywords: string): Promise<any> {
     try {
-      // Wait for the pipeline to be ready
-      const pipeline = await this.embeddingPipeline;
+      // Wait for the embedding pipeline to be ready
+      const embeddingPipeline = await this.embeddingPipeline;
 
       // Vectorize the user input
       const userInput = `${intent} ${mainIdea} ${keywords}`;
-      const vectorResult = await pipeline(userInput);
+      console.log('User Input:', userInput);
 
-      // Console log the vector result
-      console.log('Vectorized User Input:', vectorResult);
+      const vectorResult = await embeddingPipeline(userInput, { pooling: 'cls', normalize: true});
 
-      let data: { [key: string]: any } = { intent, mainIdea, keywords };
-      console.log('Intent:', intent);
-      console.log('Main Idea:', mainIdea);
+      // const vectorResult2 = await embeddingPipeline("ashwaghanda for pain reduction", { pooling: 'cls', normalize: true})
+
+      // console.log("Vector 1: ", vectorResult )
+      // console.log("Vector 2: ", vectorResult2)
+
+      // const similarity = cos_sim(vectorResult.data, vectorResult2.data)
+      // console.log("Similarity score: ", similarity)
+
+      // The pipeline may return embeddings in different formats; adjust accordingly
+      console.log('Vectorized User Input:', vectorResult.data);
+      console.log('Length: ', vectorResult.data.length)
+
+      
+
+      // Use the searchDatabase function to retrieve relevant text chunks
+      const retrievedData = await searchDatabase(vectorResult.data, .5, 8);
+      console.log('Retrieved Data:', retrievedData);
+
+      let data: { [key: string]: any } = {
+        intent,
+        mainIdea,
+        keywords,
+        retrievedData, // Pass the retrieved data to agents
+      };
+
+      // console.log('Intent:', intent);
+      // console.log('Main Idea:', mainIdea);
 
       for (const agent of this.agents) {
         try {

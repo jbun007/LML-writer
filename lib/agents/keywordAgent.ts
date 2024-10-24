@@ -15,11 +15,20 @@ class keywordAgent extends Agent {
       const targetIntent = inputData.intent;
       let intent = "";
 
-      if (targetIntent === "solution") {
+      if (targetIntent === "trends") {
+        intent = "articles that the surge in popularity of a specific product, supplement, ingredient,practice, etc."
+      }
+      if (targetIntent === "problem") {
         intent = "articles that help users clearly define a problem and learn about the best known solutions."
       }
-      else if (targetIntent === "product research") {
-        intent = "articles that help users make informed decisions about which product to buy."
+      if (targetIntent === "product") {
+        intent = "articles that help users make informed decisions about which product to buy via reviews, comparisons, etc"
+      }
+      if (targetIntent === "supplement") {
+        intent = "articles that explain what a supplement is or highlights one of its specific use cases"
+      }
+      if (targetIntent === "ingredient") {
+        intent = "articles that explain what an ingredient is or highlights one of its specific use cases"
       }
 
       const entities = await this.extractEntities(userInput);

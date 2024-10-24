@@ -393,35 +393,84 @@ export default function Dashboard() {
                       <SelectValue placeholder="Select Target Audience" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="solution">
-                        <div className="flex items-start gap-3 text-muted-foreground">
-                          <Bird className="size-5" />
-                          <div className="grid gap-0.5">
-                            <p>
-                              <span className="font-medium text-foreground">
-                                Define the Problem, Find solutions
-                              </span>
-                            </p>
-                            <p className="text-xs" data-description>
-                              Articles that help users clearly define a problem
-                              and learn about the best known solutions.
-                            </p>
-                          </div>
-                        </div>
-                      </SelectItem>
-                      <SelectItem value="product research">
+                      <SelectItem value="trends">
                         <div className="flex items-start gap-3 text-muted-foreground">
                           <Turtle className="size-5" />
                           <div className="grid gap-0.5">
                             <p>
                               <span className="font-medium text-foreground">
-                                Research Before Buying
+                                Health & Wellness Trends
+                              </span>
+                            </p>
+                            <p className="text-xs" data-description>
+                              Articles that highlights the surge in popularity
+                              of a specific product, supplement, ingredient,
+                              practice, etc.
+                            </p>
+                          </div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="problem">
+                        <div className="flex items-start gap-3 text-muted-foreground">
+                          <Bird className="size-5" />
+                          <div className="grid gap-0.5">
+                            <p>
+                              <span className="font-medium text-foreground">
+                                Problem Breakdown
+                              </span>
+                            </p>
+                            <p className="text-xs" data-description>
+                              Articles that identify problems and break down the
+                              best known solutions.
+                            </p>
+                          </div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="product">
+                        <div className="flex items-start gap-3 text-muted-foreground">
+                          <Turtle className="size-5" />
+                          <div className="grid gap-0.5">
+                            <p>
+                              <span className="font-medium text-foreground">
+                                Product Breakdown
                               </span>
                             </p>
                             <p className="text-xs" data-description>
                               Articles that help users make informed decisions
-                              before making a purchase. Reviews, comparisons,
+                              before making a purchase via reviews, comparisons,
                               etc.
+                            </p>
+                          </div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="supplement">
+                        <div className="flex items-start gap-3 text-muted-foreground">
+                          <Turtle className="size-5" />
+                          <div className="grid gap-0.5">
+                            <p>
+                              <span className="font-medium text-foreground">
+                                Supplement Breakdown
+                              </span>
+                            </p>
+                            <p className="text-xs" data-description>
+                              Articles that explain what a supplement is or
+                              highlights one of its specific use cases.
+                            </p>
+                          </div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="ingredient">
+                        <div className="flex items-start gap-3 text-muted-foreground">
+                          <Turtle className="size-5" />
+                          <div className="grid gap-0.5">
+                            <p>
+                              <span className="font-medium text-foreground">
+                                Ingredient Breakdown
+                              </span>
+                            </p>
+                            <p className="text-xs" data-description>
+                              Articles that explain what a ingredient is or
+                              highlights one of its specific use cases.
                             </p>
                           </div>
                         </div>
