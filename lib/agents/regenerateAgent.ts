@@ -18,10 +18,10 @@ async regenerateContent(previousOutput: any, additionalCommentary: string): Prom
 
       Input:
       1. Previous Article Title: "${previousOutput.articleTitle}"
-      2. Additional Commentary: "${additionalCommentary}"
+      2. Instructions to revise the article: "${additionalCommentary}"
 
       Instructions:
-      1. Carefully review the previous article content and the additional commentary.
+      1. Carefully review the previous article content and the new instructions for revision.
       2. Incorporate the feedback and new instructions into the regenerated article.
       3. Maintain the original topic and core message while improving based on the feedback.
       4. Ensure the content is engaging, well-structured, and flows logically.
@@ -30,7 +30,7 @@ async regenerateContent(previousOutput: any, additionalCommentary: string): Prom
       1. Article Title:
         - Create a compelling, SEO-friendly title.
         - Use plain text, no markdown.
-        - Aim for 50-60 characters.
+        - Aim for under 60 characters.
 
       2. Article Description:
         - Write a concise summary for SEO meta description.
@@ -65,8 +65,7 @@ async regenerateContent(previousOutput: any, additionalCommentary: string): Prom
     if (Array.isArray(this.sharedContext.messages)) {
         messages.push(...this.sharedContext.messages);
     }
-  
-    let sharedContext: SharedContext = new SharedContext();
+
     const response = await this.aiClient.chat.completions.create({
       model: "gpt-4o-2024-08-06",
       messages: messages,
@@ -76,7 +75,8 @@ async regenerateContent(previousOutput: any, additionalCommentary: string): Prom
     try {
       const parsedResponse = JSON.parse(response.choices[0].message.content);
       
-      sharedContext.addMessage('assistant', response.choices[0].message.content);
+      // Use the existing sharedContext to add the new message
+      this.sharedContext.addMessage('assistant', response.choices[0].message.content);
 
       //console.log("CHECKING RESPONSE FORMAT - parsedResponse ", parsedResponse);
 
@@ -84,7 +84,7 @@ async regenerateContent(previousOutput: any, additionalCommentary: string): Prom
         articleDescription: parsedResponse.articleDescription, 
         articleTitle: parsedResponse.articleTitle, 
         articleContent: parsedResponse.articleContent,
-        sharedContext: sharedContext
+        sharedContext: this.sharedContext 
     };
     } catch (error) {
       console.error("Error parsing response:", error);
