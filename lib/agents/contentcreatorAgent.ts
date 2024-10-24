@@ -32,26 +32,25 @@ export default class ContentCreatorAgent extends Agent {
 
         Title: "${articleTitle}"
 
-        Additional Context:
+        Additional Context from database:
         ${combinedRetrievedData}
 
         Instructions:
         1. Incorporate the additional context provided to enrich the article with research-backed data.
-        2. Follow the structure and key points outlined in the content plan.
+        2. Use the the structure and key points outlined in the content plan as a guide and reference
         3. Use a conversational yet professional tone throughout the article.
-        4. Avoid unnecessarily complex words or technical jargon.
-        5. Avoid a robotic tone.
-        6. Include relevant examples, statistics, or case studies to support main points.
-        7. Ensure smooth transitions between sections for a cohesive reading experience.
-        8. Use varied sentence structures and paragraph lengths for better readability.
-        9. Do not use hackneyed statements like "In conclusion" or "This article will...".
-        10. Do not include statements suggesting to consult with a healthcare provider.
-        11. Do not explicitly ask the readers to share the article.
-        12. Do not make up fake stories or testimonials.
-        13. Prioritize accuracy and specificity.
+        4. Prioritize the truth and accuracy. If you are making statements that are not proven or backed by weak research then include a disclaimer.
+        5. Avoid unnecessarily complex words or technical jargon.
+        6. Avoid a robotic tone.
+        7. Include relevant examples, statistics, or case studies to support main points.
+        8. Ensure smooth transitions between sections for a cohesive reading experience.
+        9. Use varied sentence structures and paragraph lengths for better readability.
+        10. Do not use hackneyed statements like "In conclusion" or "This article will...".
+        11. Do not include statements suggesting to consult with a healthcare provider.
+        12. Do not explicitly ask the readers to share the article.
+        13. Do not make up fake stories or testimonials.
         14. General statements like "many studies have shown that..." are not allowed.
-        15. Cite your sources.
-        16. Incorporate the following keywords: ${keywords} into the article.
+        15. Incorporate the following keywords: ${keywords} into the article.
 
         Please generate the full article based on these guidelines.
         
