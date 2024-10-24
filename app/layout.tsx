@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
+import "@/lib/embeddings/init-embeddings";
 
 const inter = Inter({ subsets: ["latin"] });
 
