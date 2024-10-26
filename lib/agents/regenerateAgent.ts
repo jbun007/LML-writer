@@ -63,7 +63,13 @@ async regenerateContent(previousOutput: any, additionalCommentary: string): Prom
 
     // Check if sharedContext.messages exists and is an array before spreading
     if (Array.isArray(this.sharedContext.messages)) {
-        messages.push(...this.sharedContext.messages);
+
+      //stop-gap solution so shared context doesn't get too long - keep under 6 messages
+        if (this.sharedContext.messages.length > 6) {
+            this.sharedContext.messages = this.sharedContext.messages.slice(-6);
+        }
+
+        messages.unshift(...this.sharedContext.messages);
     }
 
     const response = await this.aiClient.chat.completions.create({

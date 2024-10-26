@@ -1,10 +1,23 @@
 LORE-RESEARCH
 
+App Description:
+Takes the user's prompt for a blog post
+Generates keyword ideas using LLM
+Uses Google API to pull data points on the generated keywords
+Vectorizes the user's prompt and executes retrieval to get relevant research backed data from LML database
+Generates a content outline and then a blog post using the generated key words
+Option to revise article with additional instructions
+Publish artcile to LML database
+
+Embeddings Model: https://huggingface.co/mixedbread-ai/mxbai-embed-large-v1
+
 High priority:
+//google key word metric data
+//backlinks - if entities exist in database - then search article for supplement name mention and include hyperlink / prob use another agent to handle this on publish article action
 
 Medium priority:
-//vector search for backlinks & references
 //image selection / generation
+//vector search for references
 
 Low priority:
 //content length input on plannerAgent
@@ -16,6 +29,7 @@ Low priority:
 
 //COMPLETE:
 
+9/?
 //pipeline for article creation
 //iterative content generation
 //add loading state to article creation
@@ -37,3 +51,6 @@ Low priority:
 
 9/11
 //memory preservation across agent threads
+
+10/24
+//vector search for research backed context

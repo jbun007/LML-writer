@@ -50,7 +50,8 @@ export default class ContentCreatorAgent extends Agent {
         12. Do not explicitly ask the readers to share the article.
         13. Do not make up fake stories or testimonials.
         14. General statements like "many studies have shown that..." are not allowed.
-        15. Incorporate the following keywords: ${keywords} into the article.
+        15. Incorporate the following keywords / keyword phrases: ${keywords} into the article.
+        16. Always include a section at the bottom that inclues a numbered list of the references used for the article content. 
 
         Please generate the full article based on these guidelines.
         
@@ -72,6 +73,9 @@ export default class ContentCreatorAgent extends Agent {
         - Include relevant examples, data, or quotes to support key points.
         - Aim for comprehensive coverage of the topic.
         - Ensure readability and engagement throughout.
+
+        4. References:
+        - A list of the references and research cited for the article content in AMA format.
 
       Response Format:
       {
@@ -116,5 +120,6 @@ export default class ContentCreatorAgent extends Agent {
   const responseFormat = z.object({
     articleTitle: z.string(),
     articleDescription: z.string(),
-    articleContent: z.string()
+    articleContent: z.string(),
+    references: z.array(z.string())
 });
