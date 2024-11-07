@@ -1,6 +1,8 @@
 import { Agent } from './agents';
 import { z } from 'zod';
 import { zodResponseFormat } from "openai/helpers/zod";
+import { getAccessToken } from '@/utils/google-auth';
+import axios from 'axios';
 
 class keywordAgent extends Agent {
     googleClient: any;
@@ -11,6 +13,15 @@ class keywordAgent extends Agent {
     }
   
     async executeTask(inputData: any): Promise<any> {
+      try {
+        const accessToken = await getAccessToken();
+        console.log("access token: ", accessToken);
+        // Use the accessToken to make authorized requests
+      } catch (error) {
+        console.error('Error during task execution:', error);
+        // Handle the error appropriately
+      }
+
       const userInput = inputData.mainIdea;
       const targetIntent = inputData.intent;
       let intent = "";
@@ -33,7 +44,7 @@ class keywordAgent extends Agent {
 
       const entities = await this.extractEntities(userInput);
       const keywordSuggestions = await this.generateKeywords(entities, intent);
-      //const keywordMetrics = await this.getKeywordMetrics(keywordSuggestions);
+      const keywordMetrics = await this.getHistoricalMetrics(keywordSuggestions);
       //const filteredKeywords = this.filterKeywords(keywordMetrics);
       //const questionKeywords = await this.generateQuestionKeywords(entities, keywordSuggestions);
 
@@ -42,8 +53,9 @@ class keywordAgent extends Agent {
       // console.log("questionKeywords: \n", questionKeywords);
       
       return {
-        //keywordResults: [...keywordSuggestions, ...questionKeywords]
         keywordResults: keywordSuggestions
+        //keywordResults: keywordMetrics,
+
       };
     }
 
@@ -130,8 +142,10 @@ class keywordAgent extends Agent {
             return [];
           }
 
+          //returns string array of keywords
           const keywords = parsedResponse.generatedKeywords.split(',').map((keyword: string) => keyword.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
           //console.log("processed keywords: \n", keywords);
+
           return keywords;
         }
         catch (error) {
@@ -158,6 +172,63 @@ class keywordAgent extends Agent {
         .filter(metric => metric.volume >= minVolume && metric.competition <= maxCompetition)
         .map(metric => metric.keyword)
         .slice(0, 10);
+    }
+
+    async getHistoricalMetrics(keywords: string[]): Promise<any[]> {
+      try {
+        const accessToken = await getAccessToken();
+        const customerId = '2010840203'; 
+
+        const url = `https://googleads.googleapis.com/v18/customers/${customerId}:generateKeywordHistoricalMetrics`;
+
+        const requestBody = {
+          keywords: keywords,
+          geoTargetConstants: ['2840'], // Example: USA
+          keywordPlanNetwork: 'GOOGLE_SEARCH',
+          language: '1000', // Example: English
+        };
+
+        try {
+          const response = await axios.post(url, requestBody, {
+            headers: {
+              Authorization: `Bearer ${accessToken}`,
+              'Content-Type': 'application/json',
+            },
+          });
+
+          console.log("KEYWORD API: ", response.data.results);
+
+          return response.data.results.map((result: any) => ({
+            keyword: result.text,
+            avgMonthlySearches: result.keywordMetrics.avgMonthlySearches,
+            competition: result.keywordMetrics.competition,
+            competitionIndex: result.keywordMetrics.competitionIndex,
+            lowTopOfPageBidMicros: result.keywordMetrics.lowTopOfPageBidMicros,
+            highTopOfPageBidMicros: result.keywordMetrics.highTopOfPageBidMicros,
+          }));
+        } catch (error) {
+          if (axios.isAxiosError(error)) {
+            console.error('Axios error:', {
+              message: error.message,
+              code: error.code,
+              response: error.response ? {
+                status: error.response.status,
+                statusText: error.response.statusText,
+                headers: error.response.headers,
+                data: error.response.data,
+              } : null,
+              request: error.request,
+            });
+            return [];
+          } else {
+            console.error('Unexpected error:', error);
+            return [];
+          }
+        }
+      } catch (error) {
+        console.error('Error fetching historical metrics:', error);
+        return [];
+      }
     }
 
     // private async generateQuestionKeywords(entities: string[], keywordSuggestions: string[]): Promise<string[]> {
