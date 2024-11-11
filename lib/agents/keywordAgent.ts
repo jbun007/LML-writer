@@ -70,7 +70,7 @@ class keywordAgent extends Agent {
 
       try {
         const response = await this.aiClient.chat.completions.create({
-          model: "gpt-4",
+          model: "gpt-4o-mini",
           messages: [
             { role: "system", content: "You are a helpful assistant that extracts entities from user input." },
             ...this.sharedContext.getMessages()
