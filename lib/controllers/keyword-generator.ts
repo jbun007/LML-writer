@@ -1,7 +1,7 @@
 import { Agent } from '../agents/agents';
 import OpenAI from 'openai';
 import keywordAgent from '../agents/keywordAgent';
-import { SharedContext } from '../sharedContext';
+import { SharedContext } from '@/lib/sharedContext';
 interface GoogleSearchCredentials {
   apiKey: string;
   cseId: string;

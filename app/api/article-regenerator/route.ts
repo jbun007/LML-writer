@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import ArticleRegenerator from "@/lib/article/article-regenerator";
+import ArticleRegenerator from "@/lib/controllers/article-regenerator";
 import { SharedContext } from "@/lib/sharedContext";
 
 export async function POST(req: NextRequest) {
