@@ -27,7 +27,7 @@ class keywordAgent extends Agent {
       let intent = "";
 
       if (targetIntent === "trends") {
-        intent = "articles that the surge in popularity of a specific product, supplement, ingredient,practice, etc."
+        intent = "articles that breakdown the surge in popularity of a specific product, supplement, ingredient, practice, etc."
       }
       if (targetIntent === "problem") {
         intent = "articles that help users clearly define a problem and learn about the best known solutions."
@@ -44,7 +44,8 @@ class keywordAgent extends Agent {
 
       const entities = await this.extractEntities(userInput);
       const keywordSuggestions = await this.generateKeywords(entities, intent);
-      const keywordMetrics = await this.getHistoricalMetrics(keywordSuggestions);
+      //const keywordMetrics = await this.getHistoricalMetrics(keywordSuggestions);
+
       //const filteredKeywords = this.filterKeywords(keywordMetrics);
       //const questionKeywords = await this.generateQuestionKeywords(entities, keywordSuggestions);
 
@@ -174,6 +175,8 @@ class keywordAgent extends Agent {
         .slice(0, 10);
     }
 
+    //pending google test account -> basic account upgrade
+    //sent application but no approval
     async getHistoricalMetrics(keywords: string[]): Promise<any[]> {
       try {
         const accessToken = await getAccessToken();
