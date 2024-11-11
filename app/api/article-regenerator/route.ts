@@ -13,8 +13,10 @@ export async function POST(req: NextRequest) {
         );
       }
       console.log("SHARED CONTEXT FOR REGENERATION: \n", context);
+
       const articleRegenerator = new ArticleRegenerator(context);
       return NextResponse.json(await articleRegenerator.execute(previousOutput, additionalCommentary));
+
     } catch (error) {
       if (error instanceof Error) {
         return NextResponse.json({ error: error.message }, { status: 500 });

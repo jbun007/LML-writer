@@ -44,14 +44,12 @@ class keywordAgent extends Agent {
 
       const entities = await this.extractEntities(userInput);
       const keywordSuggestions = await this.generateKeywords(entities, intent);
+      
       //const keywordMetrics = await this.getHistoricalMetrics(keywordSuggestions);
-
       //const filteredKeywords = this.filterKeywords(keywordMetrics);
-      //const questionKeywords = await this.generateQuestionKeywords(entities, keywordSuggestions);
 
-      // console.log("entities: \n", entities);
-      // console.log("keywordSuggestions: \n", keywordSuggestions);
-      // console.log("questionKeywords: \n", questionKeywords);
+      console.log("entities: \n", entities);
+      console.log("keywordSuggestions: \n", keywordSuggestions);
       
       return {
         keywordResults: keywordSuggestions
@@ -233,44 +231,6 @@ class keywordAgent extends Agent {
         return [];
       }
     }
-
-    // private async generateQuestionKeywords(entities: string[], keywordSuggestions: string[]): Promise<string[]> {
-    //   const prompt = `Generate question-based keywords for ${entities} based on these suggestions:${keywordSuggestions}
-      
-    //    Instructions: 
-    //     1. Return a comma separatedlist of the questions. 
-    //     2. The question keywords suggestions should be a mix of frequently searched and less competitive, long-tail keywords
-    //     3. The question keywords suggestions should be related to the entities
-    //     4. Ensure that the suggestions are not too generic`;
-      
-    //   try {
-    //     const response = await this.aiClient.chat.completions.create({
-    //       model: "gpt-4o-2024-08-06",
-    //       messages: [
-    //         { role: "system", content: "You are a helpful assistant that generates content based on a given plan." },
-    //         { role: "user", content: prompt }
-    //       ],
-    //       response_format: zodResponseFormat(responseFormat, "generatedKeywords")
-    //     });
-
-    //     const content = response.choices[0].message.content;
-    //       let parsedResponse;
-    //       try {
-    //         parsedResponse = JSON.parse(content);
-    //       } catch (error) {
-    //         console.error("Error parsing JSON - question keywords:", error);
-    //         return [];
-    //       }
-
-    //       const keywords = parsedResponse.generatedKeywords.split(',').map((keyword: string) => keyword.replace(/^\d+\.\s*/, '').trim()).filter(Boolean);
-    //       //console.log("question keywords: \n", keywords);
-    //       return keywords;
-    //     }
-    //     catch (error) {
-    //       console.error("Error generating question keywords:", error);
-    //       return [];
-    //     }
-    // }
 }
 
 const responseFormat = z.object({

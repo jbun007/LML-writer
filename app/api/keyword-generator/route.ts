@@ -6,8 +6,9 @@ export async function POST(req: NextRequest) {
 
   try {
     const keywordGenerator = new KeywordGenerator();
+    const result = await keywordGenerator.execute(intent, mainIdea);
 
-    return NextResponse.json(await keywordGenerator.execute(intent, mainIdea));
+    return NextResponse.json(result);
 
 
   } catch (error) {

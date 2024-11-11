@@ -14,22 +14,11 @@ class ContentPlannerAgent extends Agent {
       //outline sections
       const outline = await this.outlineSections(targetAudience, mainIdea, articleLength, keywords);
 
-      //supporting points
-      //const supportingPoints = await this.supportingPoints(outline);
-
-      //generate references
-      //const references = await this.generateReferences(supportingPoints);
-
       //generate content plan
-      //const contentPlan = await this.generateContentPlan(objective, outline, supportingPoints, references, style);
       const contentPlan = await this.generateContentPlan(outline, keywords);
 
-      //refine plan
-      //const refinedPlan = await this.refinePlan(contentPlan);
-
       //generate title
-      const articleMetadata = await this.generateTitle_Description(contentPlan);
-
+      const articleMetadata = await this.generateTitle(contentPlan);
 
       //Suggest where visuals, graphs, images, or other media could be incorporated to enhance the content. Provide ideas on the type of visuals that would best complement each section
 
@@ -117,53 +106,7 @@ class ContentPlannerAgent extends Agent {
       return response.choices[0].message.content.trim();
     }
 
-    // async supportingPoints(outline: string): Promise<any> {
-    //     const prompt = `For each section in the outline, suggest key supporting points, evidence, or arguments that will help convey the main message effectively. These points should be well-researched and relevant to the topic. `
-
-    //     //structured output
-
-    //     const response = await this.aiClient.chat.completions.create({
-    //         model: "gpt-3.5-turbo",
-    //         messages: [
-    //             { role: "system", content: "You are a helpful assistant that generates content plans for articles." },
-    //             { role: "user", content: prompt }
-    //         ]
-    //     });
-    //     console.log(response.choices[0].message.content.trim());
-    //     return response.choices[0].message.content.trim();
-    // }
-
-    // async generateReferences(supportingPoints: string): Promise<any> {
-    //     const prompt = `Identify reliable sources, references, or research materials that should be included in the content. These should support the key points in each section and add credibility to the article.`
-
-    //     const response = await this.aiClient.chat.completions.create({
-    //         model: "gpt-3.5-turbo",
-    //         messages: [
-    //             { role: "system", content: "You are a helpful assistant that generates content plans for articles." },
-    //             { role: "user", content: prompt }
-    //         ]
-    //     });
-    //     console.log(response.choices[0].message.content.trim());
-    //     return response.choices[0].message.content.trim();
-    // }
-
-    // async refinePlan(plan: string): Promise<any> {
-    //     const prompt = `Refine the plan to ensure that it is both comprehensive and engaging. The plan should be a detailed outline that includes all key points and supporting evidence for each section. It should be written in a clear and concise manner that is easy to follow. The plan should be a detailed outline that includes all key points and supporting evidence for each section.`
-
-    //     //structured output
-
-    //     const response = await this.aiClient.chat.completions.create({
-    //         model: "gpt-3.5-turbo",
-    //         messages: [
-    //             { role: "system", content: "You are a helpful assistant that generates content plans for articles." },
-    //             { role: "user", content: prompt }
-    //         ]
-    //     });
-    //     console.log(response.choices[0].message.content.trim());
-    //     return response.choices[0].message.content.trim();
-    // }
-
-    async generateTitle_Description(contentPlan: string): Promise<any> {
+    async generateTitle(contentPlan: string): Promise<any> {
       // Use this.aiClient to generate title
       const prompt = `Task: Generate a sophisticated article title and description.
           The description will be used as the meta description for the article.

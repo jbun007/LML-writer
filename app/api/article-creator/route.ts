@@ -6,11 +6,9 @@ export async function POST(req: NextRequest) {
 
   try {
     const articleCreator = new ArticleCreator();
-    // const result = await articleCreator.execute(contentType, searchQuery);
-    // return NextResponse.json({ result });
 
-    return NextResponse.json(await articleCreator.execute(intent, mainIdea, keywords));
-
+    const result = await articleCreator.execute(intent, mainIdea, keywords);
+    return NextResponse.json( result );
 
   } catch (error) {
     if (error instanceof Error) {

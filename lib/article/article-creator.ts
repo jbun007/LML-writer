@@ -1,4 +1,4 @@
-import { EditorAgent, Agent } from '../agents/agents';
+import { Agent } from '../agents/agents';
 import OpenAI from 'openai';
 import ContentPlannerAgent from '../agents/plannerAgent';
 import ContentCreatorAgent from '../agents/contentcreatorAgent';

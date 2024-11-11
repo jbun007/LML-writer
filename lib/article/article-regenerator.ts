@@ -1,4 +1,4 @@
-import { EditorAgent, Agent } from '../agents/agents';
+import { Agent } from '../agents/agents';
 import RegenerateAgent from '../agents/regenerateAgent';
 import OpenAI from 'openai';
 import { SharedContext } from '../sharedContext';
