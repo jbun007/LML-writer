@@ -14,15 +14,15 @@ class ContentPlannerAgent extends Agent {
       //outline sections
       const outline = await this.outlineSections(targetAudience, mainIdea, articleLength, keywords);
 
-      //generate content plan
-      const contentPlan = await this.generateContentPlan(outline, keywords);
+      //generate content plan - needed if we decide to implement research step
+      //const contentPlan = await this.generateContentPlan(outline, keywords);
 
       //generate title
-      const articleMetadata = await this.generateTitle(contentPlan);
+      const articleMetadata = await this.generateMetadata(outline, intent);
 
       //Suggest where visuals, graphs, images, or other media could be incorporated to enhance the content. Provide ideas on the type of visuals that would best complement each section
 
-      return { contentPlan: contentPlan, articleTitle: articleMetadata.articleTitle, articleDescription: articleMetadata.articleDescription };
+      return { contentPlan: outline, articleTitle: articleMetadata.articleTitle, articleDescription: articleMetadata.articleDescription };
     }
 
     async outlineSections(targetAudience: string, searchQuery: string, articleLength: string, keywords: string): Promise<any> {
@@ -57,9 +57,9 @@ class ContentPlannerAgent extends Agent {
         3. Keep the core idea (${searchQuery}) central to the entire outline.
         4. Include 3-5 main sections, each with 2-3 subsections.
         5. Start with an introduction and end with a conclusion.
-        6. Implement the following keywords: ${keywords} into the outline.
+        6. Incorporate the following keywords: ${keywords} into the outline.
 
-        Output Format:
+        Exmaple Output Format:
         I. [Introduction Title]
           A. [Subsection]
         II. [Main Section 1]
@@ -79,7 +79,7 @@ class ContentPlannerAgent extends Agent {
         Generate the outline now:`;
 
       const response = await this.aiClient.chat.completions.create({
-          model: "gpt-3.5-turbo",
+          model: "gpt-4o-mini",
           messages: [
               { role: "system", content: "You are a helpful assistant that generates content plans for articles." },
               { role: "user", content: prompt }
@@ -88,30 +88,34 @@ class ContentPlannerAgent extends Agent {
       //console.log(response.choices[0].message.content.trim());
       return response.choices[0].message.content.trim();
   }
+
+
   
-    async generateContentPlan(outline: string, keywords: string): Promise<any> {
-      // Use this.aiClient to generate content plan
-      const prompt = `Generate a content plan for an article with the following outline: ${outline}.
-      Incorporate the following keywords: ${keywords} into the content plan.`;
-      //The supporting points are the following: ${supportingPoints}. The references are the following: ${references}. The style of the article is the following: ${style}
+    // async generateContentPlan(outline: string, keywords: string): Promise<any> {
+    //   // Use this.aiClient to generate content plan
+    //   const prompt = `Generate a content plan for an article with the following outline: ${outline}.
+    //   Incorporate the following keywords: ${keywords} into the content plan.`;
+    //   //The supporting points are the following: ${supportingPoints}. The references are the following: ${references}. The style of the article is the following: ${style}
 
-      const response = await this.aiClient.chat.completions.create({
-        model: "gpt-3.5-turbo",
-        messages: [
-          { role: "system", content: "You are a helpful assistant that generates content plans for articles." },
-          { role: "user", content: prompt }
-        ]
-      });
+    //   const response = await this.aiClient.chat.completions.create({
+    //     model: "gpt-3.5-turbo",
+    //     messages: [
+    //       { role: "system", content: "You are a helpful assistant that generates content plans for articles." },
+    //       { role: "user", content: prompt }
+    //     ]
+    //   });
 
-      return response.choices[0].message.content.trim();
-    }
+    //   return response.choices[0].message.content.trim();
+    // }
 
-    async generateTitle(contentPlan: string): Promise<any> {
+    async generateMetadata(contentPlan: string, intent: string): Promise<any> {
       // Use this.aiClient to generate title
-      const prompt = `Task: Generate a sophisticated article title and description.
+      const prompt = `Task: 
+          Considering the following article intent and outline, generate a sophisticated article title and description.
           The description will be used as the meta description for the article.
 
-          Content: ${contentPlan}
+          Outline: ${contentPlan}
+          Intent: ${intent}
 
           Style Guidelines:
           1. Emulate the depth and nuance of The Atlantic or The New Yorker.
@@ -124,10 +128,6 @@ class ContentPlannerAgent extends Agent {
           2. Incorporate a subtle play on words or a clever turn of phrase, if appropriate.
           3. Aim for 6-12 words.
           4. Use clear, concise language.
-
-          Examples of effective titles:
-          - "Creatine's Hidden Potential: Beyond Muscle, How It Fuels the Modern Mind"
-          - "Collagen's Promise: Separating Myth from Medicine in the Pursuit of Youth"
 
           Output: Provide only the generated title and descriptions as strings, without quotation marks or additional commentary.`;
 
