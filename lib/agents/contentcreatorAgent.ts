@@ -12,9 +12,15 @@ export default class ContentCreatorAgent extends Agent {
       const { contentPlan, articleTitle, keywords, retrievedData } = inputData;
 
       const generatedContent = await this.generateContent(contentPlan, articleTitle, keywords, retrievedData);
+      const metadata = await this.generateMetadata(contentPlan)
+
+
+      console.log("article metadata: ", metadata)
       return {
         articleContent: generatedContent.articleContent,
         sharedContext: generatedContent.sharedContext,
+        articleTitle: metadata.articleTitle,
+        articleDescription: metadata.articleDescription
       };
     }
 
@@ -26,7 +32,7 @@ export default class ContentCreatorAgent extends Agent {
     ): Promise<any> {
       const combinedRetrievedData = retrievedData.join('\n\n');
 
-      const prompt = `Create a detailed and engaging article based on the following content plan:
+      const prompt = `Create a detailed and engaging article based on the following content plan and additional context:
       
         ${contentPlan}
 
@@ -37,7 +43,7 @@ export default class ContentCreatorAgent extends Agent {
 
         Instructions:
         1. Incorporate the additional context provided to enrich the article with research-backed data.
-        2. Use the the structure and key points outlined in the content plan as a guide and reference
+        2. Use the the structure and key points outlined in the content plan as a guide
         3. Use a conversational yet professional tone throughout the article.
         4. Prioritize the truth and accuracy. If you are making statements that are not proven or backed by weak research then include a disclaimer.
         5. Avoid unnecessarily complex words or technical jargon.
@@ -50,7 +56,7 @@ export default class ContentCreatorAgent extends Agent {
         12. Do not explicitly ask the readers to share the article.
         13. Do not make up fake stories or testimonials.
         14. General statements like "many studies have shown that..." are not allowed.
-        15. Incorporate the following keywords / keyword phrases: ${keywords} into the article.
+        15. Ensure the content is relevant to the following keywords / keyword phrases: ${keywords}
         16. Always include a section at the bottom that inclues a numbered list of the references used for the article content. 
 
         Please generate the full article based on these guidelines.
@@ -58,6 +64,7 @@ export default class ContentCreatorAgent extends Agent {
         Output Requirements:
         1. Article Title:
         - Create a compelling, SEO-friendly title.
+        - Avoid clichés and sensationalism.
         - Use plain text, no markdown.
         - Aim for under 60 characters.
 
@@ -71,17 +78,40 @@ export default class ContentCreatorAgent extends Agent {
         - Use markdown format.
         - Maintain a clear structure with headings, subheadings, and paragraphs.
         - Include relevant examples, data, or quotes to support key points.
-        - Aim for comprehensive coverage of the topic.
         - Ensure readability and engagement throughout.
 
         4. References:
         - A list of the references and research cited for the article content in AMA format.
 
-      Response Format:
+      Article Conent Format:
+      #Article Title
+          [Introduction]
+        ###[Main Section 1]
+          ####[Subsection Title]
+          [Subsection]
+          ####[Subsection Title]
+          [Subsection]
+        ###[Main Section 2]
+          ####[Subsection Title]
+          [Subsection]
+          ####[Subsection Title]
+          [Subsection]
+        ###[Main Section 3]
+          ####[Subsection Title]
+          [Subsection]
+          ####[Subsection Title]
+          [Subsection]
+        ###[Conclusion Title]
+          [Subsection]
+        <br>
+        <br>
+        #####[Sources]
+          <small>[List of sources]<small>
+      
+        Response Format:
       {
-        "articleTitle": "Your generated title here",
-        "articleDescription": "Your generated description here",
-        "articleContent": "Your full article content in markdown here"
+        "articleContent": "The full article content in markdown here",
+        "references": "List of references used in the article in AMA format"
       }
 
       Note: Provide only the JSON response as specified in the response format, without any additional explanation or commentary.`;
@@ -104,22 +134,65 @@ export default class ContentCreatorAgent extends Agent {
   
   
         return {
-          articleDescription: parsedResponse.articleDescription, 
-          articleTitle: parsedResponse.articleTitle, 
           articleContent: parsedResponse.articleContent,
-          sharedContext: this.sharedContext 
+          sharedContext: this.sharedContext,
+          references: parsedResponse.references
       };
       } catch (error) {
         console.error("Error parsing response:", error);
         throw new Error("Failed to parse the AI response");
       }
       } 
+
+      async generateMetadata(contentPlan: string): Promise<any> {
+        // Use this.aiClient to generate title
+        const prompt = `Task: 
+            Considering the following article outline, generate a sophisticated article title and description.
+            Both the title and description will be used as the metadata for the article. These need to be SEO friendly and optimized to be discovered by relevant searches.
+  
+            Outline: ${contentPlan}
+  
+            Style Guidelines:
+            1. Emulate the depth and nuance of The Atlantic or The New Yorker.
+            2. Evoke curiosity and suggest intellectual depth.
+            3. Appeal to readers who enjoy well-researched, in-depth articles.
+            4. Be engaging and thought-provoking.
+  
+            Requirements:
+            1. Avoid clichés and sensationalism.
+            2. Incorporate a subtle play on words or a clever turn of phrase, if appropriate.
+            3. Aim for 6-12 words.
+            4. Use clear, concise language.
+  
+            Output: Provide only the generated title and description as strings, without quotation marks or additional commentary.`;
+  
+        const response = await this.aiClient.chat.completions.create({
+          model: "gpt-4o-2024-08-06",
+          messages: [
+            { role: "system", content: "You are a helpful assistant that generates high-quality, intriguing blog titles and descriptions." },
+            { role: "user", content: prompt }
+          ],
+          response_format: zodResponseFormat(responseFormat2, "articleMetadata")
+        });
+  
+        //console.log("Article metadata: \n", response.choices[0].message.content.trim());
+        const parsedResponse = JSON.parse(response.choices[0].message.content.trim());
+  
+        return {
+          articleTitle: parsedResponse.articleTitle,
+          articleDescription: parsedResponse.articleDescription
+        };
+      }
+    
   }
 
 
   const responseFormat = z.object({
-    articleTitle: z.string(),
-    articleDescription: z.string(),
     articleContent: z.string(),
     references: z.array(z.string())
 });
+
+const responseFormat2 = z.object({
+  articleTitle: z.string(),
+  articleDescription: z.string()
+})
