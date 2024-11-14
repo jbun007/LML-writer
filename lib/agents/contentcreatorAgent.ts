@@ -154,30 +154,17 @@ export default class ContentCreatorAgent extends Agent {
         14. General statements like "many studies have shown that..." are not allowed.
         15. Ensure the content is relevant to the following keywords / keyword phrases: ${keywords}
         16. Always include a section at the bottom that inclues a numbered list of the references used for the article content. 
-        17. The article should be ${length} words in length.
 
         Please generate the full article based on these guidelines.
         
         Output Requirements:
-        1. Article Title:
-        - Create a compelling, SEO-friendly title.
-        - Avoid clichés and sensationalism.
-        - Use plain text, no markdown.
-        - Aim for under 60 characters.
-
-        2. Article Description:
-        - Write a concise summary for SEO meta description.
-        - Use plain text, no markdown.
-        - Aim for 150-160 characters.
-        - Include primary keywords and capture the essence of the article.
-
-       3. Article Content:
+       1. Article Content:
         - Use markdown format.
         - Maintain a clear structure with headings, subheadings, and paragraphs.
         - Include relevant examples, data, or quotes to support key points.
-        - Ensure readability and engagement throughout.
+        - The article should be ${length} words in length.
 
-        4. References:
+        2. References:
         - A list of the references and research cited for the article content in AMA format.
 
       Article Conent Format:
