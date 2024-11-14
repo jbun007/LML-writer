@@ -9,7 +9,7 @@ class ContentPlannerAgent extends Agent {
       const intent = inputData.intent;
       const keywords = inputData.keywords;
       const targetAudience = inputData.targetAudience;
-      const articleLength = inputData.articleLength;
+      const articleLength = inputData.length;
 
       //outline sections
       const outline = await this.outlineSections(targetAudience, mainIdea, articleLength, keywords);
@@ -28,15 +28,83 @@ class ContentPlannerAgent extends Agent {
 
       let length: string;
       if (articleLength === "short") {
-        length = "300-500";
+        length = "150-250";
       } else if (articleLength === "medium") {
-        length = "600-900";
+        length = "300-600";
       } else if (articleLength === "long") {
-        length = "1500-2000";
+        length = "700-1200";
       } else {
         // Default to medium if articleLength is not recognized
-        length = "600-900";
+        length = "300-600";
       }
+
+      let output_format: string;
+      if (articleLength === "short") {
+        output_format = 
+        `     
+        I. [Introduction Title]
+          A. [Subsection]
+        II. [Main Section 1]
+            A. [Subsection]
+            B. [Subsection]
+        V. [Conclusion Title]
+          A. [Subsection]
+        `;
+      } else if (articleLength === "medium") {
+        output_format = 
+        `     
+        I. [Introduction Title]
+          A. [Subsection]
+        II. [Main Section 1]
+            A. [Subsection]
+            B. [Subsection]
+        III. [Main Section 2]
+            A. [Subsection]
+            B. [Subsection]
+        IV. [Main Section 3]
+            A. [Subsection]
+            B. [Subsection]
+        V. [Conclusion Title]
+          A. [Subsection]
+        `;
+      } else if (articleLength === "long") {
+        output_format = 
+        `     
+        I. [Introduction Title]
+          A. [Subsection]
+        II. [Main Section 1]
+            A. [Subsection]
+            B. [Subsection]
+        III. [Main Section 2]
+            A. [Subsection]
+            B. [Subsection]
+        IV. [Main Section 3]
+            A. [Subsection]
+            B. [Subsection]
+        V. [Conclusion Title]
+          A. [Subsection]
+        `;
+      } else {
+        // Default to medium if articleLength is not recognized
+        output_format = 
+        `     
+        I. [Introduction Title]
+          A. [Subsection]
+        II. [Main Section 1]
+            A. [Subsection]
+            B. [Subsection]
+        III. [Main Section 2]
+            A. [Subsection]
+            B. [Subsection]
+        IV. [Main Section 3]
+            A. [Subsection]
+            B. [Subsection]
+        V. [Conclusion Title]
+          A. [Subsection]
+        `;
+      }
+
+      console.log("plannerAgent: ", length, output_format)
 
       //if taraget audience empty then set to "people"
       targetAudience = targetAudience?.trim() || 'people';
@@ -52,24 +120,10 @@ class ContentPlannerAgent extends Agent {
         1. Provide a structured outline with main sections and subsections.
         2. Ensure each section builds upon the previous one for a cohesive narrative.
         3. Keep the core idea (${searchQuery}) central to the entire outline.
-        4. Include 3-5 main sections, each with 2-3 subsections.
-        5. Start with an introduction and end with a conclusion.
-        6. Incorporate the following keywords: ${keywords} into the outline.
+        4. Incorporate the following keywords: ${keywords} into the outline. Use your discretion here. If by including a keyword, it hurts the cohesion or readability of the article - do not include it.
 
         Exmaple Output Format:
-        I. [Introduction Title]
-          A. [Subsection]
-        II. [Main Section 1]
-            A. [Subsection]
-            B. [Subsection]
-        III. [Main Section 2]
-            A. [Subsection]
-            B. [Subsection]
-        IV. [Main Section 3]
-            A. [Subsection]
-            B. [Subsection]
-        V. [Conclusion Title]
-          A. [Subsection]
+        ${output_format}
 
         Before the outline, briefly restate the content objective in your own words.
 
@@ -85,7 +139,8 @@ class ContentPlannerAgent extends Agent {
       //console.log(response.choices[0].message.content.trim());
       return response.choices[0].message.content.trim();
   }
-}
+
+
   
     // async generateContentPlan(outline: string, keywords: string): Promise<any> {
     //   // Use this.aiClient to generate content plan
@@ -103,5 +158,6 @@ class ContentPlannerAgent extends Agent {
 
     //   return response.choices[0].message.content.trim();
     // }
+}
 
 export default ContentPlannerAgent;

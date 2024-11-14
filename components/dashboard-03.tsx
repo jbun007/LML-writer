@@ -17,6 +17,7 @@ import {
   SquareUser,
   Triangle,
   Turtle,
+  Pencil,
 } from "lucide-react";
 
 import { Badge } from "@/components/ui/badge";
@@ -63,6 +64,7 @@ import { transformKeywordsToTableData } from "@/utils/dataTransform";
 
 export default function Dashboard() {
   const [intent, setIntent] = useState("solution");
+  const [length, setLength] = useState("medium");
   const [mainIdea, setMainIdea] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [output, setOutput] = useState<{
@@ -125,6 +127,7 @@ export default function Dashboard() {
           intent: intent,
           mainIdea: mainIdea,
           keywords: selectedKeywords ? selectedKeywords : "",
+          length: length,
         }),
       });
 
@@ -345,7 +348,9 @@ export default function Dashboard() {
       <div className="flex flex-col">
         <header className="sticky top-0 z-10 flex h-[53px] items-center gap-1 border-b bg-background px-4">
           <h1 className="text-xl font-semibold">LML ARTICLES</h1>
-          <Drawer>
+
+          {/* Don't need this drawer - but keeping as reference  */}
+          {/* <Drawer>
             <DrawerTrigger asChild>
               <Button variant="ghost" size="icon" className="md:hidden">
                 <Settings className="size-4" />
@@ -360,7 +365,8 @@ export default function Dashboard() {
                 </DrawerDescription>
               </DrawerHeader>
             </DrawerContent>
-          </Drawer>
+          </Drawer> */}
+
           <Button
             variant="outline"
             size="sm"
@@ -478,20 +484,64 @@ export default function Dashboard() {
                     </SelectContent>
                   </Select>
                 </div>
-                {/* <div className="grid gap-3">
-                  <Label htmlFor="temperature">Temperature</Label>
-                  <Input id="temperature" type="number" placeholder="0.4" />
+                <div className="grid gap-3">
+                  <Label htmlFor="length">Article Length</Label>
+                  <Select onValueChange={(value) => setLength(value)}>
+                    <SelectTrigger
+                      id="model"
+                      className="items-start [&_[data-description]]:hidden"
+                    >
+                      <SelectValue placeholder="Select Article Length" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="short">
+                        <div className="flex items-start gap-3 text-muted-foreground">
+                          <Pencil className="size-5" />
+                          <div className="grid gap-0.5">
+                            <p>
+                              <span className="font-medium text-foreground">
+                                Short
+                              </span>
+                            </p>
+                            <p className="text-xs" data-description>
+                              150-250 words
+                            </p>
+                          </div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="medium">
+                        <div className="flex items-start gap-3 text-muted-foreground">
+                          <Pencil className="size-5" />
+                          <div className="grid gap-0.5">
+                            <p>
+                              <span className="font-medium text-foreground">
+                                Medium
+                              </span>
+                            </p>
+                            <p className="text-xs" data-description>
+                              300-600 words
+                            </p>
+                          </div>
+                        </div>
+                      </SelectItem>
+                      <SelectItem value="long">
+                        <div className="flex items-start gap-3 text-muted-foreground">
+                          <Pencil className="size-5" />
+                          <div className="grid gap-0.5">
+                            <p>
+                              <span className="font-medium text-foreground">
+                                Long
+                              </span>
+                            </p>
+                            <p className="text-xs" data-description>
+                              700-1500 words
+                            </p>
+                          </div>
+                        </div>
+                      </SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="grid gap-3">
-                    <Label htmlFor="top-p">Top P</Label>
-                    <Input id="top-p" type="number" placeholder="0.7" />
-                  </div>
-                  <div className="grid gap-3">
-                    <Label htmlFor="top-k">Top K</Label>
-                    <Input id="top-k" type="number" placeholder="0.0" />
-                  </div>
-                </div> */}
               </fieldset>
 
               {/* Messages Input */}
@@ -499,19 +549,6 @@ export default function Dashboard() {
                 <legend className="-ml-1 px-1 text-sm font-medium">
                   {/* Title for fieldset */}
                 </legend>
-                {/* <div className="grid gap-3">
-                  <Label htmlFor="role">Role</Label>
-                  <Select defaultValue="system">
-                    <SelectTrigger>
-                      <SelectValue placeholder="Select a role" />
-                    </SelectTrigger>
-                    <SelectContent>
-                      <SelectItem value="system">System</SelectItem>
-                      <SelectItem value="user">User</SelectItem>
-                      <SelectItem value="assistant">Assistant</SelectItem>
-                    </SelectContent>
-                  </Select>
-                </div> */}
                 <div className="grid gap-3">
                   <Label htmlFor="content">Keywords</Label>
                   <Textarea

@@ -9,9 +9,9 @@ export default class ContentCreatorAgent extends Agent {
     }
 
     async executeTask(inputData: any): Promise<any> {
-      const { contentPlan, articleTitle, keywords, retrievedData } = inputData;
+      const { contentPlan, articleTitle, keywords, retrievedData, length } = inputData;
 
-      const generatedContent = await this.generateContent(contentPlan, articleTitle, keywords, retrievedData);
+      const generatedContent = await this.generateContent(contentPlan, articleTitle, keywords, length, retrievedData);
       const metadata = await this.generateMetadata(contentPlan)
 
 
@@ -28,8 +28,104 @@ export default class ContentCreatorAgent extends Agent {
       contentPlan: any,
       articleTitle: any,
       keywords: any,
+      articleLength: any,
       retrievedData: string[]
     ): Promise<any> {
+
+      let length: string;
+      if (articleLength === "short") {
+        length = "150-250";
+      } else if (articleLength === "medium") {
+        length = "300-600";
+      } else if (articleLength === "long") {
+        length = "700-1200";
+      } else {
+        // Default to medium if articleLength is not recognized
+        length = "300-600";
+      }
+
+      let output_format: string;
+      if (articleLength === "short") {
+        output_format = 
+        `  
+        #Article Title   
+          [Introduction]
+        ###[Main Section 1]
+          ####[Subsection Title]
+          [Subsection]
+        ###[Conclusion Title]
+          [Subsection]
+
+          
+        #####[Sources]
+          [1]
+          [2]
+          [3]
+          ...
+        `;
+      } else if (articleLength === "long") {
+        output_format = 
+        `     
+        #Article Title
+          [Introduction]
+        ###[Main Section 1]
+          ####[Subsection Title]
+          [Subsection]
+          ####[Subsection Title]
+          [Subsection]
+        ###[Main Section 2]
+          ####[Subsection Title]
+          [Subsection]
+          ####[Subsection Title]
+          [Subsection]
+        ###[Main Section 3]
+          ####[Subsection Title]
+          [Subsection]
+          ####[Subsection Title]
+          [Subsection]
+        ###[Conclusion Title]
+          [Subsection]
+
+          
+        ####[Sources]
+          [1]
+          [2]
+          [3]
+          ...
+        `;
+      } else {
+        // Default to medium if articleLength is not recognized
+        output_format = 
+        `     
+        #Article Title
+          [Introduction]
+        ###[Main Section 1]
+          ####[Subsection Title]
+          [Subsection]
+          ####[Subsection Title]
+          [Subsection]
+        ###[Main Section 2]
+          ####[Subsection Title]
+          [Subsection]
+          ####[Subsection Title]
+          [Subsection]
+        ###[Main Section 3]
+          ####[Subsection Title]
+          [Subsection]
+          ####[Subsection Title]
+          [Subsection]
+        ###[Conclusion Title]
+          [Subsection]
+
+          
+        #####[Sources]
+          [1]
+          [2]
+          [3]
+          ...
+        `;
+      }
+
       const combinedRetrievedData = retrievedData.join('\n\n');
 
       const prompt = `Create a detailed and engaging article based on the following content plan and additional context:
@@ -58,6 +154,7 @@ export default class ContentCreatorAgent extends Agent {
         14. General statements like "many studies have shown that..." are not allowed.
         15. Ensure the content is relevant to the following keywords / keyword phrases: ${keywords}
         16. Always include a section at the bottom that inclues a numbered list of the references used for the article content. 
+        17. The article should be ${length} words in length.
 
         Please generate the full article based on these guidelines.
         
@@ -84,30 +181,8 @@ export default class ContentCreatorAgent extends Agent {
         - A list of the references and research cited for the article content in AMA format.
 
       Article Conent Format:
-      #Article Title
-          [Introduction]
-        ###[Main Section 1]
-          ####[Subsection Title]
-          [Subsection]
-          ####[Subsection Title]
-          [Subsection]
-        ###[Main Section 2]
-          ####[Subsection Title]
-          [Subsection]
-          ####[Subsection Title]
-          [Subsection]
-        ###[Main Section 3]
-          ####[Subsection Title]
-          [Subsection]
-          ####[Subsection Title]
-          [Subsection]
-        ###[Conclusion Title]
-          [Subsection]
-        <br>
-        <br>
-        #####[Sources]
-          <small>[List of sources]<small>
-      
+        ${output_format}
+
         Response Format:
       {
         "articleContent": "The full article content in markdown here",

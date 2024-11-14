@@ -76,7 +76,7 @@ export default class ArticleCreator {
     this.embeddingPipeline = getEmbeddingPipeline();
   }
 
-  async execute(intent: string, mainIdea: string, keywords: string): Promise<any> {
+  async execute(intent: string, mainIdea: string, keywords: string, length: string): Promise<any> {
     try {
       // Wait for the embedding pipeline to be ready
       const embeddingPipeline = await this.embeddingPipeline;
@@ -108,8 +108,9 @@ export default class ArticleCreator {
       let data: { [key: string]: any } = {
         intent,
         mainIdea,
+        length,
         keywords,
-        retrievedData, // Pass the retrieved data to agents
+        retrievedData, 
       };
 
       // console.log('Intent:', intent);
