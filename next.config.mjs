@@ -1,6 +1,15 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
     productionBrowserSourceMaps: true,
+    images: {
+      remotePatterns: [
+        {
+          protocol: 'https',
+          hostname: 'oaidalleapiprodscus.blob.core.windows.net',
+          pathname: '/**', // Match all paths
+        },
+      ],
+    },
     webpack: (config, { isServer }) => {
       if (isServer) {
         // Exclude native modules from the server-side bundle

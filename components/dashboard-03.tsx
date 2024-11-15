@@ -61,12 +61,14 @@ import {
 import { Keyword, columns } from "@/app/keyword-table/columns";
 import { DataTable } from "@/app/keyword-table/data-table";
 import { transformKeywordsToTableData } from "@/utils/dataTransform";
+import Image from "next/image";
 
 export default function Dashboard() {
   const [intent, setIntent] = useState("solution");
   const [length, setLength] = useState("medium");
   const [mainIdea, setMainIdea] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [isImageLoading, setIsImageLoading] = useState(false);
   const [output, setOutput] = useState<{
     articleTitle: string;
     articleContent: string;
@@ -78,6 +80,10 @@ export default function Dashboard() {
   const [isKeywordTableOpen, setIsKeywordTableOpen] = useState(false);
   const [tableData, setTableData] = useState<Keyword[]>([]);
   const [selectedKeywords, setSelectedKeywords] = useState<string>("");
+  const [imagePrompt, setImagePrompt] = useState("");
+  const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(
+    null
+  );
 
   const LoadingSpinner = () => (
     <div className="flex justify-center items-center h-full">
@@ -224,6 +230,31 @@ export default function Dashboard() {
     } catch (error) {
       console.error("Error publishing article:", error);
       // You can add an error message or notification here
+    }
+  };
+
+  const generateImage = async (event: React.FormEvent) => {
+    event.preventDefault();
+    setIsImageLoading(true);
+    try {
+      const response = await fetch("/api/image-generator", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ prompt: imagePrompt }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to generate image");
+      }
+
+      const data = await response.json();
+      setGeneratedImageUrl(data.imageUrl); // Assuming the API returns the image URL
+    } catch (error) {
+      console.error("Error generating image:", error);
+    } finally {
+      setIsImageLoading(false);
     }
   };
 
@@ -386,17 +417,14 @@ export default function Dashboard() {
               onSubmit={generateArticle}
             >
               <fieldset className="grid gap-6 rounded-lg border p-4">
-                <legend className="-ml-1 px-1 text-sm font-medium">
-                  Settings
-                </legend>
                 <div className="grid gap-3">
-                  <Label htmlFor="model">Intent</Label>
+                  <Label htmlFor="model">Article Type</Label>
                   <Select onValueChange={(value) => setIntent(value)}>
                     <SelectTrigger
                       id="model"
                       className="items-start [&_[data-description]]:hidden"
                     >
-                      <SelectValue placeholder="Select Target Audience" />
+                      <SelectValue placeholder="Select Article Type" />
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="trends">
@@ -544,17 +572,21 @@ export default function Dashboard() {
                 </div>
               </fieldset>
 
-              {/* Messages Input */}
+              {/* Article Prompt Input */}
               <fieldset className="grid gap-6 rounded-lg border p-4">
                 <legend className="-ml-1 px-1 text-sm font-medium">
                   {/* Title for fieldset */}
                 </legend>
                 <div className="grid gap-3">
-                  <Label htmlFor="content">Keywords</Label>
+                  <Label htmlFor="content">Article Prompt</Label>
+                  <span className="text-sm font-light">
+                    {" "}
+                    Include main points and ideas of the article{" "}
+                  </span>
                   <Textarea
                     id="content"
-                    placeholder="Keywords for content generation."
-                    className="min-h-[9.5rem]"
+                    placeholder="Ashwaghanda influence on testosterone..."
+                    className="min-h-[6rem]"
                     onChange={(e) => setMainIdea(e.target.value)}
                   />
                 </div>
@@ -569,6 +601,52 @@ export default function Dashboard() {
                   </Button>
                   <Button type="submit" size="sm" className="ml-auto gap-1.5">
                     Generate Article
+                    <CornerDownLeft className="size-3.5" />
+                  </Button>
+                </div>
+              </fieldset>
+
+              {/* Article Image Section */}
+              <fieldset className="grid gap-6 rounded-lg border p-4">
+                <Label htmlFor="image-prompt">Article Image</Label>
+                <div className="border rounded-lg relative w-[500px] h-[500px]">
+                  {isImageLoading ? (
+                    <div
+                      className="flex justify-center items-center bg-slate-200"
+                      style={{ width: "100%", height: "100%" }}
+                    >
+                      <div
+                        className="animate-spin rounded-full border-b-2 border-gray-900"
+                        style={{ width: "64px", height: "64px" }}
+                      ></div>
+                    </div>
+                  ) : generatedImageUrl ? (
+                    <Image
+                      src={generatedImageUrl}
+                      alt="Generated Thumbnail"
+                      fill
+                      className="border-4 rounded-lg"
+                    />
+                  ) : (
+                    <Image
+                      src="/abstract-paint.webp"
+                      alt="Placeholder Image"
+                      fill
+                      className="border-4 rounded-lg"
+                    />
+                  )}
+                </div>
+                <div className="grid gap-3">
+                  <Textarea
+                    id="image-prompt"
+                    placeholder="Generate a vibrant expressive abstract painting that creates a sense of movement and energy through bold colors and loose brushstrokes"
+                    className="min-h-[6rem]"
+                    onChange={(e) => setImagePrompt(e.target.value)}
+                  />
+                </div>
+                <div>
+                  <Button size="sm" className="gap-1.5" onClick={generateImage}>
+                    Generate Image
                     <CornerDownLeft className="size-3.5" />
                   </Button>
                 </div>

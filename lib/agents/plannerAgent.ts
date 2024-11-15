@@ -104,12 +104,10 @@ class ContentPlannerAgent extends Agent {
         `;
       }
 
-      console.log("plannerAgent: ", length, output_format)
-
       //if taraget audience empty then set to "people"
       targetAudience = targetAudience?.trim() || 'people';
 
-      const objective = `Create a detailed content plan for an article that aims to educate ${targetAudience} about ${searchQuery}. The objective is to inform and inspire the readers. We want readers to organically share the article with their circle of influences. The article should be roughly ${length} words.`;
+      const objective = `Create a detailed content plan for an article that aims to educate ${targetAudience} about ${searchQuery}. The objective is to inform and inspire the readers. We want readers to organically share the article with their circle of influences.`;
 
       const prompt = `Create an article outline based on the following:
 
