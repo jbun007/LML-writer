@@ -571,7 +571,7 @@ export default function Dashboard() {
 
               {/* Article Prompt Input */}
               <fieldset className="grid gap-4 rounded-lg border p-4">
-                <legend className="-ml-1 px-1 text-sm font-medium">
+                <legend className="ml-1 text-sm font-medium">
                   {/* Title for fieldset */}
                 </legend>
                 <div className="grid gap-2">
@@ -653,12 +653,12 @@ export default function Dashboard() {
             </form>
           </div>
 
+          {/* Output Section */}
           <div className="relative flex h-full min-h-[50vh] flex-col rounded-xl bg-muted/50 p-4 lg:col-span-2">
             <Badge variant="outline" className="absolute right-3 top-3">
               Output
             </Badge>
             <div className="flex-1 overflow-auto p-4">
-              {/* ********       where the output will be displayed        *****/}
               {isLoading ? (
                 <div className="flex flex-col justify-center items-center h-full">
                   <span className="mb-4">Patience is a virtue...</span>
